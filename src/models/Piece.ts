@@ -1,16 +1,32 @@
 import { PieceType, Color, SquareNotation, SquareDistance } from '../types/chess';
 import { Square as SquareUtil } from '../utils/Square';
 
-export class Piece {
-  public readonly type: PieceType;
+export abstract class Piece {
   public readonly color: Color;
   private _square!: SquareNotation;
-  private _hasMoved: boolean = false;
+  protected _hasMoved: boolean = false;
 
-  constructor(type: PieceType, color: Color, square: SquareNotation) {
-    this.type = type;
+  constructor(color: Color, square: SquareNotation) {
     this.color = color;
     this.square = square;
+  }
+
+  // Abstract method that must be implemented by subclasses
+  abstract canMoveTo(targetSquare: SquareNotation): boolean;
+  
+  // Abstract getter for piece type
+  abstract get type(): PieceType;
+  
+  // Abstract method for cloning pieces
+  abstract clone(): Piece;
+
+  /**
+   * Helper method to copy common properties to a cloned piece
+   */
+  protected copyToClone(clonedPiece: Piece): void {
+    if (this._hasMoved) {
+      clonedPiece._hasMoved = true;
+    }
   }
 
   get square(): SquareNotation {
@@ -72,10 +88,9 @@ export class Piece {
   }
 
   /**
-   * Checks if this piece can move to the given square
-   * This is a basic implementation - more complex rules would be in the Game class
+   * Helper method to check if a target square is valid
    */
-  canMoveTo(targetSquare: SquareNotation): boolean {
+  protected isValidTarget(targetSquare: SquareNotation): boolean {
     if (!SquareUtil.isValid(targetSquare)) {
       return false;
     }
@@ -85,83 +100,14 @@ export class Piece {
       return false;
     }
 
-    // Basic movement patterns (simplified)
-    const distance = SquareUtil.getDistance(this.square, targetSquare);
-    
-    switch (this.type) {
-      case 'pawn':
-        return this.canPawnMove(targetSquare, distance);
-      case 'rook':
-        return this.canRookMove(targetSquare, distance);
-      case 'knight':
-        return this.canKnightMove(distance);
-      case 'bishop':
-        return this.canBishopMove(targetSquare, distance);
-      case 'queen':
-        return this.canQueenMove(targetSquare, distance);
-      case 'king':
-        return this.canKingMove(distance);
-      default:
-        return false;
-    }
-  }
-
-  private canPawnMove(targetSquare: SquareNotation, distance: SquareDistance): boolean {
-    const direction = this.color === 'white' ? 1 : -1;
-    const startRank = this.color === 'white' ? 2 : 7;
-    const currentCoords = SquareUtil.toCoordinates(this.square);
-    
-    // Forward move
-    if (distance.fileDistance === 0) {
-      if (distance.rankDistance === 1 * direction) {
-        return true;
-      }
-      // Two squares from starting position
-      if (distance.rankDistance === 2 * direction && currentCoords.rank === startRank) {
-        return true;
-      }
-    }
-    
-    // Diagonal capture (simplified - would need to check for enemy piece)
-    if (distance.fileDistance === 1 && distance.rankDistance === 1 * direction) {
-      return true;
-    }
-    
-    return false;
-  }
-
-  private canRookMove(targetSquare: SquareNotation, distance: SquareDistance): boolean {
-    return (distance.fileDistance === 0 && distance.rankDistance > 0) ||
-           (distance.rankDistance === 0 && distance.fileDistance > 0);
-  }
-
-  private canKnightMove(distance: SquareDistance): boolean {
-    return (distance.fileDistance === 2 && distance.rankDistance === 1) ||
-           (distance.fileDistance === 1 && distance.rankDistance === 2);
-  }
-
-  private canBishopMove(targetSquare: SquareNotation, distance: SquareDistance): boolean {
-    return SquareUtil.isSameDiagonal(this.square, targetSquare);
-  }
-
-  private canQueenMove(targetSquare: SquareNotation, distance: SquareDistance): boolean {
-    return this.canRookMove(targetSquare, distance) || this.canBishopMove(targetSquare, distance);
-  }
-
-  private canKingMove(distance: SquareDistance): boolean {
-    return distance.fileDistance <= 1 && distance.rankDistance <= 1 && 
-           (distance.fileDistance > 0 || distance.rankDistance > 0);
+    return true;
   }
 
   /**
-   * Creates a copy of this piece
+   * Helper method to get distance between squares
    */
-  clone(): Piece {
-    const clonedPiece = new Piece(this.type, this.color, this.square);
-    if (this._hasMoved) {
-      clonedPiece._hasMoved = true;
-    }
-    return clonedPiece;
+  protected getDistance(targetSquare: SquareNotation): SquareDistance {
+    return SquareUtil.getDistance(this.square, targetSquare);
   }
 
   /**
