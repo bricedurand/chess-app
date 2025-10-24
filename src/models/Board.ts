@@ -206,7 +206,7 @@ export class Board {
     for (let rank = 8; rank >= 1; rank--) {
       boardString += `${rank} `;
       for (let file = 0; file < 8; file++) {
-        const square = String.fromCharCode(97 + file) + rank;
+        const square = SquareUtil.fromCoordinates(file + 1, rank);
         const piece = this.getPiece(square);
         boardString += piece ? piece.symbol : '·';
         boardString += ' ';

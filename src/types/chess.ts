@@ -6,11 +6,6 @@ export type PieceType = 'pawn' | 'rook' | 'knight' | 'bishop' | 'queen' | 'king'
 
 export type Square = string; // e.g., "e5", "a1", "h8"
 
-export interface Position {
-  row: number; // 1-8
-  col: number; // 1-8 (a-h)
-}
-
 export interface Piece {
   type: PieceType;
   color: Color;

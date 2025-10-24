@@ -1,5 +1,3 @@
-import { Position } from '../types/chess';
-
 export class Square {
   private static readonly FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
   private static readonly RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'];
@@ -17,9 +15,9 @@ export class Square {
   }
 
   /**
-   * Converts square notation to position coordinates
+   * Converts square notation to numeric coordinates
    */
-  static toPosition(square: string): Position {
+  static toCoordinates(square: string): { col: number; row: number } {
     if (!this.isValid(square)) {
       throw new Error(`Invalid square notation: ${square}`);
     }
@@ -34,15 +32,15 @@ export class Square {
   }
 
   /**
-   * Converts position coordinates to square notation
+   * Converts numeric coordinates to square notation
    */
-  static fromPosition(position: Position): string {
-    if (position.col < 1 || position.col > 8 || position.row < 1 || position.row > 8) {
-      throw new Error(`Invalid position: ${JSON.stringify(position)}`);
+  static fromCoordinates(col: number, row: number): string {
+    if (col < 1 || col > 8 || row < 1 || row > 8) {
+      throw new Error(`Invalid coordinates: col=${col}, row=${row}`);
     }
 
-    const file = this.FILES[position.col - 1];
-    const rank = this.RANKS[position.row - 1];
+    const file = this.FILES[col - 1];
+    const rank = this.RANKS[row - 1];
     
     return file + rank;
   }
@@ -51,12 +49,12 @@ export class Square {
    * Gets the distance between two squares
    */
   static getDistance(from: string, to: string): { fileDistance: number; rankDistance: number } {
-    const fromPos = this.toPosition(from);
-    const toPos = this.toPosition(to);
+    const fromCoords = this.toCoordinates(from);
+    const toCoords = this.toCoordinates(to);
 
     return {
-      fileDistance: Math.abs(toPos.col - fromPos.col),
-      rankDistance: Math.abs(toPos.row - fromPos.row)
+      fileDistance: Math.abs(toCoords.col - fromCoords.col),
+      rankDistance: Math.abs(toCoords.row - fromCoords.row)
     };
   }
 

@@ -109,7 +109,7 @@ export class Piece {
   private canPawnMove(targetSquare: Square, distance: { fileDistance: number; rankDistance: number }): boolean {
     const direction = this.color === 'white' ? 1 : -1;
     const startRank = this.color === 'white' ? 2 : 7;
-    const currentPos = SquareUtil.toPosition(this.square);
+    const currentCoords = SquareUtil.toCoordinates(this.square);
     
     // Forward move
     if (distance.fileDistance === 0) {
@@ -117,7 +117,7 @@ export class Piece {
         return true;
       }
       // Two squares from starting position
-      if (distance.rankDistance === 2 * direction && currentPos.row === startRank) {
+      if (distance.rankDistance === 2 * direction && currentCoords.row === startRank) {
         return true;
       }
     }
