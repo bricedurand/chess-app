@@ -1,3 +1,5 @@
+import { Piece } from '../models/Piece';
+
 // Core chess types and interfaces
 
 export type Color = 'white' | 'black';
@@ -14,13 +16,6 @@ export interface SquareCoordinates {
 export interface SquareDistance {
   fileDistance: number; // Horizontal distance
   rankDistance: number; // Vertical distance
-}
-
-export interface Piece {
-  type: PieceType;
-  color: Color;
-  square: SquareNotation;
-  hasMoved?: boolean; // Important for castling and pawn moves
 }
 
 export interface Move {
