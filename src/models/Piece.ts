@@ -117,7 +117,7 @@ export class Piece {
         return true;
       }
       // Two squares from starting position
-      if (distance.rankDistance === 2 * direction && currentCoords.row === startRank) {
+      if (distance.rankDistance === 2 * direction && currentCoords.rank === startRank) {
         return true;
       }
     }
