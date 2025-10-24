@@ -4,18 +4,18 @@ export type Color = 'white' | 'black';
 
 export type PieceType = 'pawn' | 'rook' | 'knight' | 'bishop' | 'queen' | 'king';
 
-export type Square = string; // e.g., "e5", "a1", "h8"
+export type SquareNotation = string; // e.g., "e5", "a1", "h8"
 
 export interface Piece {
   type: PieceType;
   color: Color;
-  square: Square;
+  square: SquareNotation;
   hasMoved?: boolean; // Important for castling and pawn moves
 }
 
 export interface Move {
-  from: Square;
-  to: Square;
+  from: SquareNotation;
+  to: SquareNotation;
   piece: Piece;
   moveNumber: number;
   notation?: string; // e.g., "Nf3", "O-O", "exd5"

@@ -1,6 +1,5 @@
-import { Color, GameState } from '../types/chess';
+import { Color, GameState, SquareNotation, Move } from '../types/chess';
 import { Board } from './Board';
-import { Move } from './Move';
 import { Piece } from './Piece';
 import { Square as SquareUtil } from '../utils/Square';
 
@@ -48,7 +47,7 @@ export class Game {
   /**
    * Attempts to make a move
    */
-  makeMove(from: Square, to: Square): boolean {
+  makeMove(from: SquareNotation, to: SquareNotation): boolean {
     if (this.isGameOver) {
       throw new Error('Game is over');
     }
@@ -100,7 +99,7 @@ export class Game {
   /**
    * Checks if a move would put the current player's king in check
    */
-  private wouldMovePutKingInCheck(from: Square, to: Square): boolean {
+  private wouldMovePutKingInCheck(from: SquareNotation, to: SquareNotation): boolean {
     // Create a temporary board to test the move
     const tempBoard = this.board.clone();
     tempBoard.movePiece(from, to);

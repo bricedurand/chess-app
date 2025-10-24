@@ -1,23 +1,23 @@
-import { PieceType, Color, Square } from '../types/chess';
+import { PieceType, Color, SquareNotation } from '../types/chess';
 import { Square as SquareUtil } from '../utils/Square';
 
 export class Piece {
   public readonly type: PieceType;
   public readonly color: Color;
-  private _square: Square;
+  private _square!: SquareNotation;
   private _hasMoved: boolean = false;
 
-  constructor(type: PieceType, color: Color, square: Square) {
+  constructor(type: PieceType, color: Color, square: SquareNotation) {
     this.type = type;
     this.color = color;
     this.square = square;
   }
 
-  get square(): Square {
+  get square(): SquareNotation {
     return this._square;
   }
 
-  set square(newSquare: Square) {
+  set square(newSquare: SquareNotation) {
     if (!SquareUtil.isValid(newSquare)) {
       throw new Error(`Invalid square: ${newSquare}`);
     }
@@ -75,7 +75,7 @@ export class Piece {
    * Checks if this piece can move to the given square
    * This is a basic implementation - more complex rules would be in the Game class
    */
-  canMoveTo(targetSquare: Square): boolean {
+  canMoveTo(targetSquare: SquareNotation): boolean {
     if (!SquareUtil.isValid(targetSquare)) {
       return false;
     }
@@ -106,7 +106,7 @@ export class Piece {
     }
   }
 
-  private canPawnMove(targetSquare: Square, distance: { fileDistance: number; rankDistance: number }): boolean {
+  private canPawnMove(targetSquare: SquareNotation, distance: { fileDistance: number; rankDistance: number }): boolean {
     const direction = this.color === 'white' ? 1 : -1;
     const startRank = this.color === 'white' ? 2 : 7;
     const currentCoords = SquareUtil.toCoordinates(this.square);
@@ -130,7 +130,7 @@ export class Piece {
     return false;
   }
 
-  private canRookMove(targetSquare: Square, distance: { fileDistance: number; rankDistance: number }): boolean {
+  private canRookMove(targetSquare: SquareNotation, distance: { fileDistance: number; rankDistance: number }): boolean {
     return (distance.fileDistance === 0 && distance.rankDistance > 0) ||
            (distance.rankDistance === 0 && distance.fileDistance > 0);
   }
@@ -140,11 +140,11 @@ export class Piece {
            (distance.fileDistance === 1 && distance.rankDistance === 2);
   }
 
-  private canBishopMove(targetSquare: Square, distance: { fileDistance: number; rankDistance: number }): boolean {
+  private canBishopMove(targetSquare: SquareNotation, distance: { fileDistance: number; rankDistance: number }): boolean {
     return SquareUtil.isSameDiagonal(this.square, targetSquare);
   }
 
-  private canQueenMove(targetSquare: Square, distance: { fileDistance: number; rankDistance: number }): boolean {
+  private canQueenMove(targetSquare: SquareNotation, distance: { fileDistance: number; rankDistance: number }): boolean {
     return this.canRookMove(targetSquare, distance) || this.canBishopMove(targetSquare, distance);
   }
 

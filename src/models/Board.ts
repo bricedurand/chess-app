@@ -1,9 +1,9 @@
-import { Square, Color, PieceType } from '../types/chess';
+import { SquareNotation, Color, PieceType } from '../types/chess';
 import { Piece } from './Piece';
 import { Square as SquareUtil } from '../utils/Square';
 
 export class Board {
-  private pieces: Map<Square, Piece> = new Map();
+  private pieces: Map<SquareNotation, Piece> = new Map();
   private capturedPieces: Piece[] = [];
 
   constructor() {
@@ -43,7 +43,7 @@ export class Board {
   /**
    * Gets the piece at the specified square
    */
-  getPiece(square: Square): Piece | undefined {
+  getPiece(square: SquareNotation): Piece | undefined {
     return this.pieces.get(square);
   }
 
@@ -66,14 +66,14 @@ export class Board {
   /**
    * Checks if a square is occupied
    */
-  isOccupied(square: Square): boolean {
+  isOccupied(square: SquareNotation): boolean {
     return this.pieces.has(square);
   }
 
   /**
    * Checks if a square is occupied by a piece of the specified color
    */
-  isOccupiedBy(square: Square, color: Color): boolean {
+  isOccupiedBy(square: SquareNotation, color: Color): boolean {
     const piece = this.getPiece(square);
     return piece ? piece.color === color : false;
   }
@@ -81,7 +81,7 @@ export class Board {
   /**
    * Moves a piece from one square to another
    */
-  movePiece(from: Square, to: Square): Piece | undefined {
+  movePiece(from: SquareNotation, to: SquareNotation): Piece | undefined {
     const piece = this.pieces.get(from);
     if (!piece) {
       throw new Error(`No piece at ${from}`);
@@ -106,7 +106,7 @@ export class Board {
   /**
    * Removes a piece from the board
    */
-  removePiece(square: Square): Piece | undefined {
+  removePiece(square: SquareNotation): Piece | undefined {
     const piece = this.pieces.get(square);
     if (piece) {
       this.pieces.delete(square);
@@ -118,7 +118,7 @@ export class Board {
   /**
    * Places a piece on the board
    */
-  placePiece(piece: Piece, square: Square): void {
+  placePiece(piece: Piece, square: SquareNotation): void {
     if (this.isOccupied(square)) {
       throw new Error(`Square ${square} is already occupied`);
     }
@@ -151,7 +151,7 @@ export class Board {
   /**
    * Gets all squares occupied by pieces of the specified color
    */
-  getOccupiedSquares(color: Color): Square[] {
+  getOccupiedSquares(color: Color): SquareNotation[] {
     return Array.from(this.pieces.entries())
       .filter(([_, piece]) => piece.color === color)
       .map(([square, _]) => square);
@@ -160,7 +160,7 @@ export class Board {
   /**
    * Gets all empty squares
    */
-  getEmptySquares(): Square[] {
+  getEmptySquares(): SquareNotation[] {
     const allSquares = SquareUtil.getAllSquares();
     return allSquares.filter(square => !this.isOccupied(square));
   }
