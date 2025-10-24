@@ -1,5 +1,6 @@
 import { SquareNotation, Color, PieceType } from '../types/chess';
 import { Piece } from './Piece';
+import { PieceFactory } from './PieceFactory';
 import { Square as SquareUtil } from '../utils/Square';
 
 export class Board {
@@ -20,8 +21,8 @@ export class Board {
 
     // Place pawns
     for (let file of ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']) {
-      this.pieces.set(`${file}2`, new Piece('pawn', 'white', `${file}2`));
-      this.pieces.set(`${file}7`, new Piece('pawn', 'black', `${file}7`));
+      this.pieces.set(`${file}2`, PieceFactory.createPiece('pawn', 'white', `${file}2`));
+      this.pieces.set(`${file}7`, PieceFactory.createPiece('pawn', 'black', `${file}7`));
     }
 
     // Place other pieces
@@ -30,13 +31,13 @@ export class Board {
     // White pieces
     pieceOrder.forEach((type, index) => {
       const file = String.fromCharCode(97 + index); // a-h
-      this.pieces.set(`${file}1`, new Piece(type, 'white', `${file}1`));
+      this.pieces.set(`${file}1`, PieceFactory.createPiece(type, 'white', `${file}1`));
     });
 
     // Black pieces
     pieceOrder.forEach((type, index) => {
       const file = String.fromCharCode(97 + index); // a-h
-      this.pieces.set(`${file}8`, new Piece(type, 'black', `${file}8`));
+      this.pieces.set(`${file}8`, PieceFactory.createPiece(type, 'black', `${file}8`));
     });
   }
 
