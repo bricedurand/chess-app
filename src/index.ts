@@ -8,7 +8,6 @@ export { Square } from './utils/Square';
 
 // Model classes
 export { Piece } from './models/Piece';
-export { Move } from './models/Move';
 export { Board } from './models/Board';
 export { Game } from './models/Game';
 
