@@ -1,8 +1,17 @@
-import { Color, GameState, SquareNotation } from '../types/chess';
+import { Color, SquareNotation } from '../types/chess';
 import { Board } from './Board';
 import { Piece } from './Piece';
 import { Move } from './Move';
 import { Square as SquareUtil } from '../utils/Square';
+
+export interface GameState {
+  currentPlayer: Color;
+  moveHistory: Move[];
+  capturedPieces: Piece[];
+  isGameOver: boolean;
+  winner?: Color;
+  gameResult?: 'checkmate' | 'stalemate' | 'draw';
+}
 
 export class Game {
   private board: Board;
