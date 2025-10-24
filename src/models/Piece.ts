@@ -1,4 +1,4 @@
-import { PieceType, Color, SquareNotation } from '../types/chess';
+import { PieceType, Color, SquareNotation, SquareDistance } from '../types/chess';
 import { Square as SquareUtil } from '../utils/Square';
 
 export class Piece {
@@ -106,7 +106,7 @@ export class Piece {
     }
   }
 
-  private canPawnMove(targetSquare: SquareNotation, distance: { fileDistance: number; rankDistance: number }): boolean {
+  private canPawnMove(targetSquare: SquareNotation, distance: SquareDistance): boolean {
     const direction = this.color === 'white' ? 1 : -1;
     const startRank = this.color === 'white' ? 2 : 7;
     const currentCoords = SquareUtil.toCoordinates(this.square);
@@ -130,25 +130,25 @@ export class Piece {
     return false;
   }
 
-  private canRookMove(targetSquare: SquareNotation, distance: { fileDistance: number; rankDistance: number }): boolean {
+  private canRookMove(targetSquare: SquareNotation, distance: SquareDistance): boolean {
     return (distance.fileDistance === 0 && distance.rankDistance > 0) ||
            (distance.rankDistance === 0 && distance.fileDistance > 0);
   }
 
-  private canKnightMove(distance: { fileDistance: number; rankDistance: number }): boolean {
+  private canKnightMove(distance: SquareDistance): boolean {
     return (distance.fileDistance === 2 && distance.rankDistance === 1) ||
            (distance.fileDistance === 1 && distance.rankDistance === 2);
   }
 
-  private canBishopMove(targetSquare: SquareNotation, distance: { fileDistance: number; rankDistance: number }): boolean {
+  private canBishopMove(targetSquare: SquareNotation, distance: SquareDistance): boolean {
     return SquareUtil.isSameDiagonal(this.square, targetSquare);
   }
 
-  private canQueenMove(targetSquare: SquareNotation, distance: { fileDistance: number; rankDistance: number }): boolean {
+  private canQueenMove(targetSquare: SquareNotation, distance: SquareDistance): boolean {
     return this.canRookMove(targetSquare, distance) || this.canBishopMove(targetSquare, distance);
   }
 
-  private canKingMove(distance: { fileDistance: number; rankDistance: number }): boolean {
+  private canKingMove(distance: SquareDistance): boolean {
     return distance.fileDistance <= 1 && distance.rankDistance <= 1 && 
            (distance.fileDistance > 0 || distance.rankDistance > 0);
   }

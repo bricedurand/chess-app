@@ -1,4 +1,4 @@
-import { SquareNotation } from '../types/chess';
+import { SquareNotation, SquareCoordinates, SquareDistance } from '../types/chess';
 
 export class Square {
   private static readonly FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -19,7 +19,7 @@ export class Square {
   /**
    * Converts square notation to numeric coordinates
    */
-  static toCoordinates(square: SquareNotation): { col: number; row: number } {
+  static toCoordinates(square: SquareNotation): SquareCoordinates {
     if (!this.isValid(square)) {
       throw new Error(`Invalid square notation: ${square}`);
     }
@@ -28,35 +28,35 @@ export class Square {
     const rank = square[1];
 
     return {
-      col: this.FILES.indexOf(file) + 1,
-      row: parseInt(rank)
+      file: this.FILES.indexOf(file) + 1,
+      rank: parseInt(rank)
     };
   }
 
   /**
    * Converts numeric coordinates to square notation
    */
-  static fromCoordinates(col: number, row: number): SquareNotation {
-    if (col < 1 || col > 8 || row < 1 || row > 8) {
-      throw new Error(`Invalid coordinates: col=${col}, row=${row}`);
+  static fromCoordinates(coordinates: SquareCoordinates): SquareNotation {
+    if (coordinates.file < 1 || coordinates.file > 8 || coordinates.rank < 1 || coordinates.rank > 8) {
+      throw new Error(`Invalid coordinates: file=${coordinates.file}, rank=${coordinates.rank}`);
     }
 
-    const file = this.FILES[col - 1];
-    const rank = this.RANKS[row - 1];
+    const fileChar = this.FILES[coordinates.file - 1];
+    const rankChar = this.RANKS[coordinates.rank - 1];
     
-    return file + rank;
+    return fileChar + rankChar;
   }
 
   /**
    * Gets the distance between two squares
    */
-  static getDistance(from: SquareNotation, to: SquareNotation): { fileDistance: number; rankDistance: number } {
+  static getDistance(from: SquareNotation, to: SquareNotation): SquareDistance {
     const fromCoords = this.toCoordinates(from);
     const toCoords = this.toCoordinates(to);
 
     return {
-      fileDistance: Math.abs(toCoords.col - fromCoords.col),
-      rankDistance: Math.abs(toCoords.row - fromCoords.row)
+      fileDistance: Math.abs(toCoords.file - fromCoords.file),
+      rankDistance: Math.abs(toCoords.rank - fromCoords.rank)
     };
   }
 
