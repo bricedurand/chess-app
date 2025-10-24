@@ -1,5 +1,7 @@
 import { SquareNotation, SquareDistance } from '../types/chess';
 import { Piece } from './Piece';
+import { King } from './pieces/King';
+import { Pawn } from './pieces/Pawn';
 import { Square as SquareUtil } from '../utils/Square';
 
 export class Move {
@@ -50,13 +52,13 @@ export class Move {
     const checkmateSymbol = this.isCheckmate ? '#' : '';
 
     // Handle special cases
-    if (this.piece.type === 'king' && this.isCastling()) {
+    if (this.piece instanceof King && this.isCastling()) {
       const isKingside = this.to[0] === 'g';
       return isKingside ? 'O-O' : 'O-O-O';
     }
 
     // Handle pawn promotion (simplified)
-    if (this.piece.type === 'pawn' && this.isPawnPromotion()) {
+    if (this.piece instanceof Pawn && this.isPawnPromotion()) {
       return `${this.to}${checkSymbol}${checkmateSymbol}`;
     }
 
@@ -68,7 +70,7 @@ export class Move {
    * Checks if this move is a castling move
    */
   private isCastling(): boolean {
-    if (this.piece.type !== 'king') return false;
+    if (!(this.piece instanceof King)) return false;
     
     const distance = this.getDistance();
     return distance.fileDistance === 2 && distance.rankDistance === 0;
@@ -78,7 +80,7 @@ export class Move {
    * Checks if this move is a pawn promotion
    */
   private isPawnPromotion(): boolean {
-    if (this.piece.type !== 'pawn') return false;
+    if (!(this.piece instanceof Pawn)) return false;
     
     const targetRank = parseInt(this.to[1]);
     return (this.piece.color === 'white' && targetRank === 8) ||
@@ -149,6 +151,6 @@ export class Move {
    * Returns a detailed string representation of the move
    */
   toDetailedString(): string {
-    return `${this.moveNumber}. ${this.piece.color} ${this.piece.type} from ${this.from} to ${this.to}${this.isCapture ? ' (capture)' : ''}${this.isCheck ? ' (check)' : ''}${this.isCheckmate ? ' (checkmate)' : ''}`;
+    return `${this.moveNumber}. ${this.piece.color} ${this.piece.name} from ${this.from} to ${this.to}${this.isCapture ? ' (capture)' : ''}${this.isCheck ? ' (check)' : ''}${this.isCheckmate ? ' (checkmate)' : ''}`;
   }
 }

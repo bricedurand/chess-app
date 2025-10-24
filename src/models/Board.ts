@@ -1,6 +1,11 @@
-import { SquareNotation, Color, PieceType } from '../types/chess';
+import { SquareNotation, Color } from '../types/chess';
 import { Piece } from './Piece';
 import { PieceFactory } from './PieceFactory';
+import { King } from './pieces/King';
+import { Rook } from './pieces/Rook';
+import { Knight } from './pieces/Knight';
+import { Bishop } from './pieces/Bishop';
+import { Queen } from './pieces/Queen';
 import { Square as SquareUtil } from '../utils/Square';
 
 export class Board {
@@ -21,23 +26,23 @@ export class Board {
 
     // Place pawns
     for (let file of ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']) {
-      this.pieces.set(`${file}2`, PieceFactory.createPiece('pawn', 'white', `${file}2`));
-      this.pieces.set(`${file}7`, PieceFactory.createPiece('pawn', 'black', `${file}7`));
+      this.pieces.set(`${file}2`, PieceFactory.createPawn('white', `${file}2`));
+      this.pieces.set(`${file}7`, PieceFactory.createPawn('black', `${file}7`));
     }
 
-    // Place other pieces
-    const pieceOrder: PieceType[] = ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook'];
+    // Place other pieces - using class constructors directly
+    const pieceClasses = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook];
     
     // White pieces
-    pieceOrder.forEach((type, index) => {
+    pieceClasses.forEach((PieceClass, index) => {
       const file = String.fromCharCode(97 + index); // a-h
-      this.pieces.set(`${file}1`, PieceFactory.createPiece(type, 'white', `${file}1`));
+      this.pieces.set(`${file}1`, PieceFactory.createPiece(PieceClass, 'white', `${file}1`));
     });
 
     // Black pieces
-    pieceOrder.forEach((type, index) => {
+    pieceClasses.forEach((PieceClass, index) => {
       const file = String.fromCharCode(97 + index); // a-h
-      this.pieces.set(`${file}8`, PieceFactory.createPiece(type, 'black', `${file}8`));
+      this.pieces.set(`${file}8`, PieceFactory.createPiece(PieceClass, 'black', `${file}8`));
     });
   }
 
@@ -56,12 +61,12 @@ export class Board {
   }
 
   /**
-   * Gets all pieces of a specific type and color
+   * Gets all pieces of a specific class and color
    */
-  getPiecesByType(type: PieceType, color: Color): Piece[] {
+  getPiecesByClass<P extends Piece>(PieceClass: new (...args: any[]) => P, color: Color): P[] {
     return Array.from(this.pieces.values()).filter(piece => 
-      piece.type === type && piece.color === color
-    );
+      piece instanceof PieceClass && piece.color === color
+    ) as P[];
   }
 
   /**
@@ -146,7 +151,7 @@ export class Board {
    * Finds the king of the specified color
    */
   findKing(color: Color): Piece | undefined {
-    return this.getPiecesByType('king', color)[0];
+    return this.getPiecesByClass(King, color)[0];
   }
 
   /**

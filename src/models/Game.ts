@@ -76,7 +76,7 @@ export class Game {
     }
 
     if (!piece.canMoveTo(to)) {
-      throw new Error(`Invalid move: ${piece.type} cannot move from ${from} to ${to}`);
+      throw new Error(`Invalid move: ${piece.name} cannot move from ${from} to ${to}`);
     }
 
     // Check if the move would put own king in check

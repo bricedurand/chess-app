@@ -1,4 +1,4 @@
-import { PieceType, Color, SquareNotation, SquareDistance } from '../types/chess';
+import { Color, SquareNotation, SquareDistance } from '../types/chess';
 import { Square as SquareUtil } from '../utils/Square';
 
 export abstract class Piece {
@@ -13,9 +13,6 @@ export abstract class Piece {
 
   // Abstract method that must be implemented by subclasses
   abstract canMoveTo(targetSquare: SquareNotation): boolean;
-  
-  // Abstract getter for piece type
-  abstract get type(): PieceType;
   
   // Abstract method for cloning pieces
   abstract clone(): Piece;
@@ -45,46 +42,15 @@ export abstract class Piece {
     return this._hasMoved;
   }
 
-  /**
-   * Gets the Unicode symbol for this piece
-   */
-  get symbol(): string {
-    const symbols = {
-      white: {
-        king: '♔',
-        queen: '♕',
-        rook: '♖',
-        bishop: '♗',
-        knight: '♘',
-        pawn: '♙'
-      },
-      black: {
-        king: '♚',
-        queen: '♛',
-        rook: '♜',
-        bishop: '♝',
-        knight: '♞',
-        pawn: '♟'
-      }
-    };
-
-    return symbols[this.color][this.type];
-  }
+  // These methods are now abstract and must be implemented by subclasses
+  abstract get symbol(): string;
+  abstract get notation(): string;
 
   /**
-   * Gets the algebraic notation symbol for this piece
+   * Gets the name of the piece (e.g., "pawn", "king", "queen")
    */
-  get notation(): string {
-    const notationMap = {
-      king: 'K',
-      queen: 'Q',
-      rook: 'R',
-      bishop: 'B',
-      knight: 'N',
-      pawn: '' // Pawns don't have a symbol in notation
-    };
-
-    return notationMap[this.type];
+  get name(): string {
+    return this.constructor.name.toLowerCase();
   }
 
   /**
@@ -114,7 +80,7 @@ export abstract class Piece {
    * Returns a string representation of the piece
    */
   toString(): string {
-    return `${this.color} ${this.type} at ${this.square}`;
+    return `${this.color} ${this.name} at ${this.square}`;
   }
 }
 

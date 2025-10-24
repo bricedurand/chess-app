@@ -1,11 +1,8 @@
-import { PieceType, Color, SquareNotation } from '../../types/chess';
+import { Color, SquareNotation } from '../../types/chess';
 import { Piece } from '../Piece';
 import { Square as SquareUtil } from '../../utils/Square';
 
 export class Queen extends Piece {
-  get type(): PieceType {
-    return 'queen';
-  }
 
   canMoveTo(targetSquare: SquareNotation): boolean {
     if (!this.isValidTarget(targetSquare)) {

@@ -2,8 +2,6 @@
 
 export type Color = 'white' | 'black';
 
-export type PieceType = 'pawn' | 'rook' | 'knight' | 'bishop' | 'queen' | 'king';
-
 export type SquareNotation = string; // e.g., "e5", "a1", "h8"
 
 export interface SquareCoordinates {
