@@ -1,6 +1,7 @@
-import { Color, GameState, SquareNotation, Move } from '../types/chess';
+import { Color, GameState, SquareNotation } from '../types/chess';
 import { Board } from './Board';
 import { Piece } from './Piece';
+import { Move } from './Move';
 import { Square as SquareUtil } from '../utils/Square';
 
 export class Game {

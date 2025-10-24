@@ -18,20 +18,9 @@ export interface SquareDistance {
   rankDistance: number; // Vertical distance
 }
 
-export interface Move {
-  from: SquareNotation;
-  to: SquareNotation;
-  piece: Piece;
-  moveNumber: number;
-  notation?: string; // e.g., "Nf3", "O-O", "exd5"
-  isCapture?: boolean;
-  isCheck?: boolean;
-  isCheckmate?: boolean;
-}
-
 export interface GameState {
   currentPlayer: Color;
-  moveHistory: Move[];
+  moveHistory: any[]; // Move[] - avoiding circular import
   capturedPieces: Piece[];
   isGameOver: boolean;
   winner?: Color;
