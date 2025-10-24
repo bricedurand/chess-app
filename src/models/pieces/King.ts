@@ -1,5 +1,6 @@
 import { Color, SquareNotation } from '../../types/chess';
 import { Piece } from '../Piece';
+import { Square as SquareUtil } from '../../utils/Square';
 
 export class King extends Piece {
 
@@ -8,7 +9,7 @@ export class King extends Piece {
       return false;
     }
 
-    const distance = this.getDistance(targetSquare);
+    const distance = SquareUtil.getDistance(this.square, targetSquare);
     
     // King moves one square in any direction
     return distance.fileDistance <= 1 && distance.rankDistance <= 1 && 

@@ -1,5 +1,6 @@
-import { Color, SquareNotation } from '../../types/chess';
+import { SquareNotation } from '../../types/chess';
 import { Piece } from '../Piece';
+import { Square as SquareUtil } from '../../utils/Square';
 
 export class Rook extends Piece {
 
@@ -8,7 +9,7 @@ export class Rook extends Piece {
       return false;
     }
 
-    const distance = this.getDistance(targetSquare);
+    const distance = SquareUtil.getDistance(this.square, targetSquare);
     
     // Rook moves horizontally or vertically
     return (distance.fileDistance === 0 && distance.rankDistance > 0) ||

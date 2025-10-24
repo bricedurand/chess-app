@@ -1,4 +1,4 @@
-import { Color, SquareNotation, SquareDistance } from '../types/chess';
+import { Color, SquareNotation } from '../types/chess';
 import { Square as SquareUtil } from '../utils/Square';
 
 export abstract class Piece {
@@ -69,12 +69,6 @@ export abstract class Piece {
     return true;
   }
 
-  /**
-   * Helper method to get distance between squares
-   */
-  protected getDistance(targetSquare: SquareNotation): SquareDistance {
-    return SquareUtil.getDistance(this.square, targetSquare);
-  }
 
   /**
    * Returns a string representation of the piece

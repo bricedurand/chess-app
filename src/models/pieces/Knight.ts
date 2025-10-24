@@ -1,5 +1,6 @@
 import { Color, SquareNotation } from '../../types/chess';
 import { Piece } from '../Piece';
+import { Square as SquareUtil } from '../../utils/Square';
 
 export class Knight extends Piece {
 
@@ -8,7 +9,7 @@ export class Knight extends Piece {
       return false;
     }
 
-    const distance = this.getDistance(targetSquare);
+    const distance = SquareUtil.getDistance(this.square, targetSquare);
     
     // Knight moves in L-shape: 2 squares in one direction, 1 in perpendicular
     return (distance.fileDistance === 2 && distance.rankDistance === 1) ||

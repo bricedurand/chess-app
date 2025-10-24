@@ -9,7 +9,7 @@ export class Queen extends Piece {
       return false;
     }
 
-    const distance = this.getDistance(targetSquare);
+    const distance = SquareUtil.getDistance(this.square, targetSquare);
     
     // Queen moves like both rook and bishop
     const rookMove = (distance.fileDistance === 0 && distance.rankDistance > 0) ||
