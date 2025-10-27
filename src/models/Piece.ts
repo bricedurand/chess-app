@@ -11,14 +11,19 @@ export abstract class Piece {
     this.square = square;
   }
 
-  // Abstract method that must be implemented by subclasses
+  /**
+   * Determines if the piece can move to the target square
+   * @param targetSquare - The square to move the pieceto
+   * @returns True if the piece can move to the target square, false otherwise
+   */
   abstract canMoveTo(targetSquare: SquareNotation): boolean;
   
-  // Abstract method for cloning pieces
   abstract clone(): Piece;
 
   /**
-   * Helper method to copy common properties to a cloned piece
+   * Copies the common properties to a cloned piece.
+   * This method should be called by the clone method of the subclass.
+   * @param clonedPiece - The cloned piece
    */
   protected copyToClone(clonedPiece: Piece): void {
     if (this._hasMoved) {
@@ -42,8 +47,14 @@ export abstract class Piece {
     return this._hasMoved;
   }
 
-  // These methods are now abstract and must be implemented by subclasses
+  /**
+   * Gets the symbol of the piece (e.g., "♙", "♚", "♛")
+   */
   abstract get symbol(): string;
+
+  /**
+   * Gets the notation of the piece (e.g., "P", "K", "Q")
+   */
   abstract get notation(): string;
 
   /**
@@ -71,7 +82,7 @@ export abstract class Piece {
 
 
   /**
-   * Returns a string representation of the piece
+   * Example: "white pawn at e2"
    */
   toString(): string {
     return `${this.color} ${this.name} at ${this.square}`;
