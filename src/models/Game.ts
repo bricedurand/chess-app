@@ -62,40 +62,19 @@ export class Game {
       throw new Error('Game is over');
     }
 
-    if (!SquareUtil.isValid(from) || !SquareUtil.isValid(to)) {
-      throw new Error('Invalid square notation');
+    const candidateMove = Move.createCandidate(from, to, this.board, this.currentPlayer);
+
+    if (!candidateMove.isValid) {
+      throw new Error(`Invalid move: ${candidateMove.validationErrors.join(', ')}`);
     }
 
-    const piece = this.board.getPiece(from);
-    if (!piece) {
-      throw new Error(`No piece at ${from}`);
-    }
-
-    if (piece.color !== this.currentPlayer) {
-      throw new Error(`It's ${this.currentPlayer}'s turn`);
-    }
-
-    if (!piece.canMoveTo(to)) {
-      throw new Error(`Invalid move: ${piece.name} cannot move from ${from} to ${to}`);
-    }
-
-    // Check if the move would put own king in check
-    if (this.wouldMovePutKingInCheck(from, to)) {
-      throw new Error('Move would put own king in check');
-    }
-
-    // Make the move
-    const capturedPiece = this.board.movePiece(from, to);
+    // Execute the move
+    candidateMove.execute(this.board);
     const moveNumber = Math.floor(this.moveHistory.length / 2) + 1;
     
-    // Create move record
-    const move = new Move(from, to, piece, moveNumber, {
-      isCapture: !!capturedPiece,
-      isCheck: this.isKingInCheck(this.getOpponentColor()),
-      isCheckmate: this.isCheckmate(this.getOpponentColor())
-    });
-
-    this.moveHistory.push(move);
+    // Create historical move record
+    const historicalMove = candidateMove.toHistoricalMove(moveNumber, this.board);
+    this.moveHistory.push(historicalMove);
 
     // Check for game over conditions
     this.checkGameOver();
@@ -107,22 +86,10 @@ export class Game {
   }
 
   /**
-   * Checks if a move would put the current player's king in check
+   * Creates a candidate move for validation
    */
-  private wouldMovePutKingInCheck(from: SquareNotation, to: SquareNotation): boolean {
-    // Make the temporary move
-    const capturedPiece =this.board.movePiece(from, to);
-
-    const isInCheck = this.board.isKingInCheck(this.currentPlayer);
-    
-    // Restore the original state
-    this.board.movePiece(to, from);
-    if (capturedPiece) {
-      this.board.placePiece(capturedPiece, to);
-      this.board.removeLastCapturedPiece();
-    }
-    
-    return isInCheck;
+  createCandidateMove(from: SquareNotation, to: SquareNotation): Move {
+    return Move.createCandidate(from, to, this.board, this.currentPlayer);
   }
 
   /**
@@ -143,7 +110,8 @@ export class Game {
     for (const piece of pieces) {
       const possibleMoves = this.getPossibleMoves(piece);
       for (const move of possibleMoves) {
-        if (!this.wouldMovePutKingInCheck(piece.square, move)) {
+        const candidateMove = Move.createCandidate(piece.square, move, this.board, color);
+        if (candidateMove.isValid) {
           return false; // Found a legal move
         }
       }
@@ -163,7 +131,8 @@ export class Game {
     for (const piece of pieces) {
       const possibleMoves = this.getPossibleMoves(piece);
       for (const move of possibleMoves) {
-        if (!this.wouldMovePutKingInCheck(piece.square, move)) {
+        const candidateMove = Move.createCandidate(piece.square, move, this.board, color);
+        if (candidateMove.isValid) {
           return false; // Found a legal move
         }
       }
@@ -225,11 +194,8 @@ export class Game {
     this.board.movePiece(lastMove.to, lastMove.from);
     
     // Restore captured piece if any
-    if (lastMove.isCapture) {
-      const capturedPiece = this.board.getCapturedPieces().pop();
-      if (capturedPiece) {
-        this.board.placePiece(capturedPiece, lastMove.to);
-      }
+    if (lastMove.isCapture && lastMove.capturedPiece) {
+      this.board.placePiece(lastMove.capturedPiece, lastMove.to);
     }
 
     // Switch players back
