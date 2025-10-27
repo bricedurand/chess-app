@@ -17,6 +17,22 @@ export abstract class Piece {
    * @returns True if the piece can move to the target square, false otherwise
    */
   abstract canMoveTo(targetSquare: SquareNotation): boolean;
+
+  /**
+   * Helper method to check if a target square is valid
+   */
+  protected isValidTarget(targetSquare: SquareNotation): boolean {
+    if (!SquareUtil.isValid(targetSquare)) {
+      return false;
+    }
+
+    // Can't move to the same square
+    if (this.square === targetSquare) {
+      return false;
+    }
+
+    return true;
+  }
   
   abstract clone(): Piece;
 
@@ -63,23 +79,6 @@ export abstract class Piece {
   get name(): string {
     return this.constructor.name.toLowerCase();
   }
-
-  /**
-   * Helper method to check if a target square is valid
-   */
-  protected isValidTarget(targetSquare: SquareNotation): boolean {
-    if (!SquareUtil.isValid(targetSquare)) {
-      return false;
-    }
-
-    // Can't move to the same square
-    if (this.square === targetSquare) {
-      return false;
-    }
-
-    return true;
-  }
-
 
   /**
    * Example: "white pawn at e2"
