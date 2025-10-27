@@ -24,9 +24,4 @@ export class Rook extends Piece {
     return 'R';
   }
 
-  clone(): Piece {
-    const clonedRook = new Rook(this.color, this.square);
-    this.copyToClone(clonedRook);
-    return clonedRook;
-  }
 }

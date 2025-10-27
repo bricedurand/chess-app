@@ -24,9 +24,4 @@ export class Knight extends Piece {
     return 'N';
   }
 
-  clone(): Piece {
-    const clonedKnight = new Knight(this.color, this.square);
-    this.copyToClone(clonedKnight);
-    return clonedKnight;
-  }
 }

@@ -122,23 +122,6 @@ export class Move {
     return this.notation;
   }
 
-  /**
-   * Creates a copy of this move
-   */
-  clone(): Move {
-    return new Move(
-      this.from,
-      this.to,
-      this.piece,
-      this.moveNumber,
-      {
-        isCapture: this.isCapture,
-        isCheck: this.isCheck,
-        isCheckmate: this.isCheckmate,
-        notation: this.notation
-      }
-    );
-  }
 
   /**
    * Returns a string representation of the move

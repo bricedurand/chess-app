@@ -45,9 +45,4 @@ export class Pawn extends Piece {
     return ''; // Pawns don't have a symbol in notation
   }
 
-  clone(): Piece {
-    const clonedPawn = new Pawn(this.color, this.square);
-    this.copyToClone(clonedPawn);
-    return clonedPawn;
-  }
 }

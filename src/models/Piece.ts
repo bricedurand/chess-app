@@ -34,18 +34,6 @@ export abstract class Piece {
     return true;
   }
   
-  abstract clone(): Piece;
-
-  /**
-   * Copies the common properties to a cloned piece.
-   * This method should be called by the clone method of the subclass.
-   * @param clonedPiece - The cloned piece
-   */
-  protected copyToClone(clonedPiece: Piece): void {
-    if (this._hasMoved) {
-      clonedPiece._hasMoved = true;
-    }
-  }
 
   get square(): SquareNotation {
     return this._square;

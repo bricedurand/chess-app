@@ -134,6 +134,14 @@ export class Board {
   }
 
   /**
+   * Removes the last captured piece from the captured pieces array
+   * Used for undoing temporary moves
+   */
+  removeLastCapturedPiece(): Piece | undefined {
+    return this.capturedPieces.pop();
+  }
+
+  /**
    * Gets all captured pieces
    */
   getCapturedPieces(): Piece[] {
@@ -184,24 +192,6 @@ export class Board {
     return opponentPieces.some(piece => piece.canMoveTo(king.square));
   }
 
-  /**
-   * Creates a copy of the board
-   */
-  clone(): Board {
-    const newBoard = new Board();
-    newBoard.pieces.clear();
-    newBoard.capturedPieces = [];
-
-    // Copy all pieces
-    for (const [square, piece] of this.pieces) {
-      newBoard.pieces.set(square, piece.clone());
-    }
-
-    // Copy captured pieces
-    newBoard.capturedPieces = this.capturedPieces.map(piece => piece.clone());
-
-    return newBoard;
-  }
 
   /**
    * Returns a string representation of the board

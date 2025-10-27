@@ -110,12 +110,19 @@ export class Game {
    * Checks if a move would put the current player's king in check
    */
   private wouldMovePutKingInCheck(from: SquareNotation, to: SquareNotation): boolean {
-    // Create a temporary board to test the move
-    const tempBoard = this.board.clone();
-    tempBoard.movePiece(from, to);
+    // Make the temporary move
+    const capturedPiece =this.board.movePiece(from, to);
+
+    const isInCheck = this.board.isKingInCheck(this.currentPlayer);
     
-    // Check if the king is in check after the move
-    return tempBoard.isKingInCheck(this.currentPlayer);
+    // Restore the original state
+    this.board.movePiece(to, from);
+    if (capturedPiece) {
+      this.board.placePiece(capturedPiece, to);
+      this.board.removeLastCapturedPiece();
+    }
+    
+    return isInCheck;
   }
 
   /**

@@ -21,9 +21,4 @@ export class Bishop extends Piece {
     return 'B';
   }
 
-  clone(): Piece {
-    const clonedBishop = new Bishop(this.color, this.square);
-    this.copyToClone(clonedBishop);
-    return clonedBishop;
-  }
 }
