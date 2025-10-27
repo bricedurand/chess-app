@@ -53,42 +53,6 @@ export class Move {
   }
 
   /**
-   * Creates a candidate move for validation
-   */
-  static createCandidate(
-    from: SquareNotation,
-    to: SquareNotation,
-    board: Board,
-    currentPlayer: Color
-  ): Move {
-    const piece = board.getPiece(from);
-    if (!piece) {
-      return new Move(from, to, null as any, 0, {
-        isValid: false,
-        validationErrors: [`No piece at ${from}`]
-      });
-    }
-
-    if (piece.color !== currentPlayer) {
-      return new Move(from, to, piece, 0, {
-        isValid: false,
-        validationErrors: [`It's ${currentPlayer}'s turn, but piece is ${piece.color}`]
-      });
-    }
-
-    const capturedPiece = board.getPiece(to);
-    const move = new Move(from, to, piece, 0, {
-      isCapture: !!capturedPiece,
-      capturedPiece: capturedPiece,
-      isValid: true,
-      validationErrors: []
-    });
-
-    // Validate the move
-    return move.validate(board, currentPlayer);
-  }
-
-  /**
    * Validates this move against the current board state
    */
   validate(board: Board, currentPlayer: Color): Move {
@@ -103,20 +67,30 @@ export class Move {
       errors.push('Cannot move to the same square');
     }
 
-    // Check if piece can move to target square
-    if (!this.piece.canMoveTo(this.to)) {
-      errors.push(`${this.piece.name} cannot move from ${this.from} to ${this.to}`);
-    }
+    // Check if piece exists
+    if (!this.piece) {
+      errors.push(`No piece at ${this.from}`);
+    } else {
+      // Check if it's the right player's turn
+      if (this.piece.color !== currentPlayer) {
+        errors.push(`It's ${currentPlayer}'s turn, but piece is ${this.piece.color}`);
+      }
 
-    // Check if target square is occupied by own piece
-    const targetPiece = board.getPiece(this.to);
-    if (targetPiece && targetPiece.color === this.piece.color) {
-      errors.push('Cannot capture own piece');
-    }
+      // Check if piece can move to target square
+      if (!this.piece.canMoveTo(this.to)) {
+        errors.push(`${this.piece.name} cannot move from ${this.from} to ${this.to}`);
+      }
 
-    // Check if move would put own king in check
-    if (this.wouldPutKingInCheck(board, currentPlayer)) {
-      errors.push('Move would put own king in check');
+      // Check if target square is occupied by own piece
+      const targetPiece = board.getPiece(this.to);
+      if (targetPiece && targetPiece.color === this.piece.color) {
+        errors.push('Cannot capture own piece');
+      }
+
+      // Check if move would put own king in check
+      if (this.wouldPutKingInCheck(board, currentPlayer)) {
+        errors.push('Move would put own king in check');
+      }
     }
 
     return new Move(

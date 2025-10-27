@@ -62,18 +62,30 @@ export class Game {
       throw new Error('Game is over');
     }
 
-    const candidateMove = Move.createCandidate(from, to, this.board, this.currentPlayer);
+    const piece = this.board.getPiece(from);
+    const capturedPiece = this.board.getPiece(to);
+    
+    // Create candidate move
+    const candidateMove = new Move(from, to, piece!, 0, {
+      isCapture: !!capturedPiece,
+      capturedPiece: capturedPiece,
+      isValid: false,
+      validationErrors: []
+    });
 
-    if (!candidateMove.isValid) {
-      throw new Error(`Invalid move: ${candidateMove.validationErrors.join(', ')}`);
+    // Validate the move
+    const validatedMove = candidateMove.validate(this.board, this.currentPlayer);
+
+    if (!validatedMove.isValid) {
+      throw new Error(`Invalid move: ${validatedMove.validationErrors.join(', ')}`);
     }
 
     // Execute the move
-    candidateMove.execute(this.board);
+    validatedMove.execute(this.board);
     const moveNumber = Math.floor(this.moveHistory.length / 2) + 1;
     
     // Create historical move record
-    const historicalMove = candidateMove.toHistoricalMove(moveNumber, this.board);
+    const historicalMove = validatedMove.toHistoricalMove(moveNumber, this.board);
     this.moveHistory.push(historicalMove);
 
     // Check for game over conditions
@@ -85,12 +97,6 @@ export class Game {
     return true;
   }
 
-  /**
-   * Creates a candidate move for validation
-   */
-  createCandidateMove(from: SquareNotation, to: SquareNotation): Move {
-    return Move.createCandidate(from, to, this.board, this.currentPlayer);
-  }
 
   /**
    * Checks if the king of the specified color is in check
@@ -110,8 +116,12 @@ export class Game {
     for (const piece of pieces) {
       const possibleMoves = this.getPossibleMoves(piece);
       for (const move of possibleMoves) {
-        const candidateMove = Move.createCandidate(piece.square, move, this.board, color);
-        if (candidateMove.isValid) {
+        const candidateMove = new Move(piece.square, move, piece, 0, {
+          isValid: false,
+          validationErrors: []
+        });
+        const validatedMove = candidateMove.validate(this.board, color);
+        if (validatedMove.isValid) {
           return false; // Found a legal move
         }
       }
@@ -131,8 +141,12 @@ export class Game {
     for (const piece of pieces) {
       const possibleMoves = this.getPossibleMoves(piece);
       for (const move of possibleMoves) {
-        const candidateMove = Move.createCandidate(piece.square, move, this.board, color);
-        if (candidateMove.isValid) {
+        const candidateMove = new Move(piece.square, move, piece, 0, {
+          isValid: false,
+          validationErrors: []
+        });
+        const validatedMove = candidateMove.validate(this.board, color);
+        if (validatedMove.isValid) {
           return false; // Found a legal move
         }
       }
