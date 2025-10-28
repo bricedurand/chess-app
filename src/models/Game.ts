@@ -10,7 +10,7 @@ export interface GameState {
   capturedPieces: Piece[];
   isGameOver: boolean;
   winner?: Color;
-  gameResult?: 'checkmate' | 'stalemate' | 'draw';
+  gameResult?: 'checkmate' | 'stalemate';
 }
 
 export class Game {
@@ -19,7 +19,7 @@ export class Game {
   private moveHistory: Move[] = [];
   private isGameOver: boolean = false;
   private winner?: Color;
-  private gameResult?: 'checkmate' | 'stalemate' | 'draw';
+  private gameResult?: 'checkmate' | 'stalemate';
 
   constructor() {
     this.board = new Board();
@@ -86,10 +86,7 @@ export class Game {
     return this.board.isKingInCheck(color);
   }
 
-  private isCheckmate(color: Color): boolean {
-    if (!this.isKingInCheck(color)) return false;
-
-    // Check if there are any legal moves
+  private hasLegalMoves(color: Color): boolean {
     const pieces = this.board.getPiecesByColor(color);
     for (const piece of pieces) {
       const possibleSquares = this.getPossibleSquares(piece);
@@ -97,31 +94,19 @@ export class Game {
         const candidateMove = new Move(piece.square, square, this.board);
         const validatedMove = candidateMove.validate(color);
         if (validatedMove.isValid) {
-          return false; // Found a legal move
+          return true; // Found a legal move
         }
       }
     }
+    return false; // No legal moves found
+  }
 
-    return true;
+  private isCheckmate(color: Color): boolean {
+    return this.isKingInCheck(color) && !this.hasLegalMoves(color);
   }
 
   private isStalemate(color: Color): boolean {
-    if (this.isKingInCheck(color)) return false;
-
-    // Check if there are any legal moves
-    const pieces = this.board.getPiecesByColor(color);
-    for (const piece of pieces) {
-      const possibleSquares = this.getPossibleSquares(piece);
-      for (const square of possibleSquares) {
-        const candidateMove = new Move(piece.square, square, this.board);
-        const validatedMove = candidateMove.validate(color);
-        if (validatedMove.isValid) {
-          return false; // Found a legal move
-        }
-      }
-    }
-
-    return true;
+    return !this.isKingInCheck(color) && !this.hasLegalMoves(color);
   }
 
   /**
