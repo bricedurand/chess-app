@@ -18,12 +18,13 @@ export class Move {
   public readonly capturedPiece?: Piece;
   public readonly isValid: boolean;
   public readonly validationErrors: string[];
+  public readonly board: Board;
 
   constructor(
     from: SquareNotation,
     to: SquareNotation,
-    piece: Piece,
-    moveNumber: number,
+    board: Board,
+    moveNumber: number = 0,
     options: {
       isCapture?: boolean;
       isCheck?: boolean;
@@ -40,12 +41,13 @@ export class Move {
 
     this.from = from;
     this.to = to;
-    this.piece = piece;
+    this.board = board;
+    this.piece = board.getPiece(from)!;
     this.moveNumber = moveNumber;
-    this.isCapture = options.isCapture || false;
+    this.isCapture = options.isCapture ?? !!board.getPiece(to);
     this.isCheck = options.isCheck || false;
     this.isCheckmate = options.isCheckmate || false;
-    this.capturedPiece = options.capturedPiece;
+    this.capturedPiece = options.capturedPiece || board.getPiece(to);
     this.isValid = options.isValid || false;
     this.validationErrors = options.validationErrors || [];
     this.notation = options.notation || this.generateNotation();
@@ -55,7 +57,7 @@ export class Move {
   /**
    * Validates this move against the current board state
    */
-  validate(board: Board, currentPlayer: Color): Move {
+  validate(currentPlayer: Color): Move {
     const errors: string[] = [];
 
     // Basic validation
@@ -82,13 +84,13 @@ export class Move {
       }
 
       // Check if target square is occupied by own piece
-      const targetPiece = board.getPiece(this.to);
+      const targetPiece = this.board.getPiece(this.to);
       if (targetPiece && targetPiece.color === this.piece.color) {
         errors.push('Cannot capture own piece');
       }
 
       // Check if move would put own king in check
-      if (this.wouldPutKingInCheck(board, currentPlayer)) {
+      if (this.wouldPutKingInCheck(currentPlayer)) {
         errors.push('Move would put own king in check');
       }
     }
@@ -96,7 +98,7 @@ export class Move {
     return new Move(
       this.from,
       this.to,
-      this.piece,
+      this.board,
       this.moveNumber,
       {
         isCapture: this.isCapture,
@@ -113,17 +115,17 @@ export class Move {
   /**
    * Checks if this move would put the current player's king in check
    */
-  private wouldPutKingInCheck(board: Board, currentPlayer: Color): boolean {
+  private wouldPutKingInCheck(currentPlayer: Color): boolean {
     // Make a temporary move
-    const tempCapturedPiece = board.movePiece(this.from, this.to);
+    const tempCapturedPiece = this.board.movePiece(this.from, this.to);
     
-    const isInCheck = board.isKingInCheck(currentPlayer);
+    const isInCheck = this.board.isKingInCheck(currentPlayer);
     
     // Restore the original state
-    board.movePiece(this.to, this.from);
+    this.board.movePiece(this.to, this.from);
     if (tempCapturedPiece) {
-      board.placePiece(tempCapturedPiece, this.to);
-      board.removeLastCapturedPiece();
+      this.board.placePiece(tempCapturedPiece, this.to);
+      this.board.removeLastCapturedPiece();
     }
     
     return isInCheck;
@@ -132,28 +134,28 @@ export class Move {
   /**
    * Executes this move on the board
    */
-  execute(board: Board): Piece | undefined {
+  execute(): Piece | undefined {
     if (!this.isValid) {
       throw new Error(`Cannot execute invalid move: ${this.validationErrors.join(', ')}`);
     }
 
-    return board.movePiece(this.from, this.to);
+    return this.board.movePiece(this.from, this.to);
   }
 
   /**
    * Creates a historical move from a candidate move
    */
-  toHistoricalMove(moveNumber: number, board: Board): Move {
+  toHistoricalMove(moveNumber: number): Move {
     const opponentColor: Color = this.piece.color === 'white' ? 'black' : 'white';
     
     return new Move(
       this.from,
       this.to,
-      this.piece,
+      this.board,
       moveNumber,
       {
         isCapture: this.isCapture,
-        isCheck: board.isKingInCheck(opponentColor),
+        isCheck: this.board.isKingInCheck(opponentColor),
         isCheckmate: this.isCheckmate,
         notation: this.notation,
         capturedPiece: this.capturedPiece,

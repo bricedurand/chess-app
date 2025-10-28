@@ -62,30 +62,22 @@ export class Game {
       throw new Error('Game is over');
     }
 
-    const piece = this.board.getPiece(from);
-    const capturedPiece = this.board.getPiece(to);
-    
     // Create candidate move
-    const candidateMove = new Move(from, to, piece!, 0, {
-      isCapture: !!capturedPiece,
-      capturedPiece: capturedPiece,
-      isValid: false,
-      validationErrors: []
-    });
+    const candidateMove = new Move(from, to, this.board);
 
     // Validate the move
-    const validatedMove = candidateMove.validate(this.board, this.currentPlayer);
+    const validatedMove = candidateMove.validate(this.currentPlayer);
 
     if (!validatedMove.isValid) {
       throw new Error(`Invalid move: ${validatedMove.validationErrors.join(', ')}`);
     }
 
     // Execute the move
-    validatedMove.execute(this.board);
+    validatedMove.execute();
     const moveNumber = Math.floor(this.moveHistory.length / 2) + 1;
     
     // Create historical move record
-    const historicalMove = validatedMove.toHistoricalMove(moveNumber, this.board);
+    const historicalMove = validatedMove.toHistoricalMove(moveNumber);
     this.moveHistory.push(historicalMove);
 
     // Check for game over conditions
@@ -116,11 +108,8 @@ export class Game {
     for (const piece of pieces) {
       const possibleMoves = this.getPossibleMoves(piece);
       for (const move of possibleMoves) {
-        const candidateMove = new Move(piece.square, move, piece, 0, {
-          isValid: false,
-          validationErrors: []
-        });
-        const validatedMove = candidateMove.validate(this.board, color);
+        const candidateMove = new Move(piece.square, move, this.board);
+        const validatedMove = candidateMove.validate(color);
         if (validatedMove.isValid) {
           return false; // Found a legal move
         }
@@ -141,11 +130,8 @@ export class Game {
     for (const piece of pieces) {
       const possibleMoves = this.getPossibleMoves(piece);
       for (const move of possibleMoves) {
-        const candidateMove = new Move(piece.square, move, piece, 0, {
-          isValid: false,
-          validationErrors: []
-        });
-        const validatedMove = candidateMove.validate(this.board, color);
+        const candidateMove = new Move(piece.square, move, this.board);
+        const validatedMove = candidateMove.validate(color);
         if (validatedMove.isValid) {
           return false; // Found a legal move
         }
