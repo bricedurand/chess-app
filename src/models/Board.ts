@@ -192,6 +192,25 @@ export class Board {
     return opponentPieces.some(piece => piece.canMoveTo(king.square));
   }
 
+  /**
+   * Checks if this move would put the current player's king in check
+   */
+  wouldPutKingInCheck(from: SquareNotation, to: SquareNotation, currentPlayer: Color): boolean {
+    // Make a temporary move
+    const tempCapturedPiece = this.movePiece(from, to);
+    
+    const isInCheck = this.isKingInCheck(currentPlayer);
+    
+    // Restore the original state
+    this.movePiece(to, from);
+    if (tempCapturedPiece) {
+      this.placePiece(tempCapturedPiece, to);
+      this.removeLastCapturedPiece();
+    }
+    
+    return isInCheck;
+  }
+
 
   /**
    * Returns a string representation of the board

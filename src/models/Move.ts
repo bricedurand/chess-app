@@ -90,7 +90,7 @@ export class Move {
       }
 
       // Check if move would put own king in check
-      if (this.wouldPutKingInCheck(currentPlayer)) {
+      if (this.board.wouldPutKingInCheck(this.from, this.to, currentPlayer)) {
         errors.push('Move would put own king in check');
       }
     }
@@ -110,25 +110,6 @@ export class Move {
         validationErrors: errors
       }
     );
-  }
-
-  /**
-   * Checks if this move would put the current player's king in check
-   */
-  private wouldPutKingInCheck(currentPlayer: Color): boolean {
-    // Make a temporary move
-    const tempCapturedPiece = this.board.movePiece(this.from, this.to);
-    
-    const isInCheck = this.board.isKingInCheck(currentPlayer);
-    
-    // Restore the original state
-    this.board.movePiece(this.to, this.from);
-    if (tempCapturedPiece) {
-      this.board.placePiece(tempCapturedPiece, this.to);
-      this.board.removeLastCapturedPiece();
-    }
-    
-    return isInCheck;
   }
 
   /**
