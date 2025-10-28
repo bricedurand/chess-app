@@ -19,6 +19,14 @@ export abstract class Piece {
   abstract canMoveTo(targetSquare: SquareNotation): boolean;
 
   /**
+   * Gets the path of squares between from and to (excluding endpoints)
+   * @param from - Starting square
+   * @param to - Target square
+   * @returns Array of squares in the path, empty if invalid or no path
+   */
+  abstract getPath(from: SquareNotation, to: SquareNotation): SquareNotation[];
+
+  /**
    * Helper method to check if a target square is valid
    */
   protected isValidTarget(targetSquare: SquareNotation): boolean {
