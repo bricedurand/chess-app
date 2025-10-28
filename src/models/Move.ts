@@ -69,23 +69,19 @@ export class Move {
       errors.push('Cannot move to the same square');
     }
 
-    // Check if piece exists
     if (!this.piece) {
       errors.push(`No piece at ${this.from}`);
     } else {
-      // Check if it's the right player's turn
-      if (this.piece.color !== currentPlayer) {
+      if (!this.isCorrectPlayer(currentPlayer)) {
         errors.push(`It's ${currentPlayer}'s turn, but piece is ${this.piece.color}`);
       }
 
-      // Check if piece can move to target square
       if (!this.piece.canMoveTo(this.to)) {
         errors.push(`${this.piece.name} cannot move from ${this.from} to ${this.to}`);
       }
 
       // Check if target square is occupied by own piece
-      const targetPiece = this.board.getPiece(this.to);
-      if (targetPiece && targetPiece.color === this.piece.color) {
+      if (this.board.isOccupiedBy(this.to, this.piece.color)) {
         errors.push('Cannot capture own piece');
       }
 
@@ -110,6 +106,10 @@ export class Move {
         validationErrors: errors
       }
     );
+  }
+
+  private isCorrectPlayer(color: Color): boolean {
+    return this.piece.color === color;
   }
 
   /**
