@@ -106,9 +106,9 @@ export class Game {
     // Check if there are any legal moves
     const pieces = this.board.getPiecesByColor(color);
     for (const piece of pieces) {
-      const possibleMoves = this.getPossibleMoves(piece);
-      for (const move of possibleMoves) {
-        const candidateMove = new Move(piece.square, move, this.board);
+      const possibleSquares = this.getPossibleSquares(piece);
+      for (const square of possibleSquares) {
+        const candidateMove = new Move(piece.square, square, this.board);
         const validatedMove = candidateMove.validate(color);
         if (validatedMove.isValid) {
           return false; // Found a legal move
@@ -128,9 +128,9 @@ export class Game {
     // Check if there are any legal moves
     const pieces = this.board.getPiecesByColor(color);
     for (const piece of pieces) {
-      const possibleMoves = this.getPossibleMoves(piece);
-      for (const move of possibleMoves) {
-        const candidateMove = new Move(piece.square, move, this.board);
+      const possibleSquares = this.getPossibleSquares(piece);
+      for (const square of possibleSquares) {
+        const candidateMove = new Move(piece.square, square, this.board);
         const validatedMove = candidateMove.validate(color);
         if (validatedMove.isValid) {
           return false; // Found a legal move
@@ -142,19 +142,19 @@ export class Game {
   }
 
   /**
-   * Gets possible moves for a piece (simplified)
+   * Gets possible squares a piece can move to. Brute force method.
    */
-  private getPossibleMoves(piece: Piece): string[] {
-    const possibleMoves: string[] = [];
+  private getPossibleSquares(piece: Piece): SquareNotation[] {
+    const possibleSquares: SquareNotation[] = [];
     const allSquares = SquareUtil.getAllSquares();
 
     for (const square of allSquares) {
       if (square !== piece.square && piece.canMoveTo(square)) {
-        possibleMoves.push(square);
+        possibleSquares.push(square);
       }
     }
 
-    return possibleMoves;
+    return possibleSquares;
   }
 
   /**
