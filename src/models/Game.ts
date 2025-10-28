@@ -40,16 +40,10 @@ export class Game {
     return this.board;
   }
 
-  /**
-   * Gets the current player
-   */
   getCurrentPlayer(): Color {
     return this.currentPlayer;
   }
 
-  /**
-   * Gets the move history
-   */
   getMoveHistory(): Move[] {
     return [...this.moveHistory];
   }
@@ -62,44 +56,36 @@ export class Game {
       throw new Error('Game is over');
     }
 
-    // Create candidate move
     const candidateMove = new Move(from, to, this.board);
 
-    // Validate the move
     const validatedMove = candidateMove.validate(this.currentPlayer);
 
     if (!validatedMove.isValid) {
       throw new Error(`Invalid move: ${validatedMove.validationErrors.join(', ')}`);
     }
 
-    // Execute the move
     validatedMove.execute();
-    const moveNumber = Math.floor(this.moveHistory.length / 2) + 1;
     
-    // Create historical move record
+    const moveNumber = Math.floor(this.moveHistory.length / 2) + 1;
     const historicalMove = validatedMove.toHistoricalMove(moveNumber);
     this.moveHistory.push(historicalMove);
 
-    // Check for game over conditions
     this.checkGameOver();
 
-    // Switch players
-    this.currentPlayer = this.getOpponentColor();
+    this.switchPlayers();
 
     return true;
   }
 
 
-  /**
-   * Checks if the king of the specified color is in check
-   */
+  private switchPlayers() {
+    this.currentPlayer = this.getOpponentColor();
+  }
+
   private isKingInCheck(color: Color): boolean {
     return this.board.isKingInCheck(color);
   }
 
-  /**
-   * Checks if the specified color is in checkmate
-   */
   private isCheckmate(color: Color): boolean {
     if (!this.isKingInCheck(color)) return false;
 
@@ -119,9 +105,6 @@ export class Game {
     return true;
   }
 
-  /**
-   * Checks if the specified color is in stalemate
-   */
   private isStalemate(color: Color): boolean {
     if (this.isKingInCheck(color)) return false;
 
@@ -173,16 +156,10 @@ export class Game {
     }
   }
 
-  /**
-   * Gets the opponent color
-   */
   private getOpponentColor(): Color {
     return this.currentPlayer === 'white' ? 'black' : 'white';
   }
 
-  /**
-   * Undoes the last move
-   */
   undoMove(): boolean {
     if (this.moveHistory.length === 0) {
       return false;
@@ -199,7 +176,7 @@ export class Game {
     }
 
     // Switch players back
-    this.currentPlayer = this.getOpponentColor();
+    this.switchPlayers();
     
     // Reset game over state
     this.isGameOver = false;
