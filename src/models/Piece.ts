@@ -6,9 +6,11 @@ export abstract class Piece {
   public readonly color: Color;
   private _square!: SquareNotation;
   protected _hasMoved: boolean = false;
+  protected board: Board;
 
-  constructor(color: Color, square: SquareNotation) {
+  constructor(color: Color, square: SquareNotation, board: Board) {
     this.color = color;
+    this.board = board;
     this.square = square;
   }
 
@@ -21,10 +23,9 @@ export abstract class Piece {
 
   /**
    * Gets all squares this piece can reach from its current position
-   * @param board - The current board state
    * @returns Array of squares the piece can move to
    */
-  abstract getReachableSquares(board: Board): SquareNotation[];
+  abstract getReachableSquares(): SquareNotation[];
 
   /**
    * Helper method to check if a target square is valid

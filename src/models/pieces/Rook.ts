@@ -18,7 +18,7 @@ export class Rook extends Piece {
   }
 
 
-  getReachableSquares(board: Board): SquareNotation[] {
+  getReachableSquares(): SquareNotation[] {
     const reachableSquares: SquareNotation[] = [];
     const currentCoords = SquareUtil.toCoordinates(this.square);
 
@@ -39,12 +39,12 @@ export class Rook extends Piece {
         const square = SquareUtil.fromCoordinates({ file, rank });
         
         // If square is occupied by own piece, stop
-        if (board.isOccupiedBy(square, this.color)) {
+        if (this.board.isOccupiedBy(square, this.color)) {
           break;
         }
         
         // If square is occupied by opponent piece, we can capture it
-        if (board.isOccupied(square)) {
+        if (this.board.isOccupied(square)) {
           reachableSquares.push(square);
           break;
         }

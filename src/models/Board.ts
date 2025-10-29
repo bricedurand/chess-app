@@ -26,8 +26,8 @@ export class Board {
 
     // Place pawns
     for (let file of ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']) {
-      this.pieces.set(`${file}2`, PieceFactory.createPawn('white', `${file}2`));
-      this.pieces.set(`${file}7`, PieceFactory.createPawn('black', `${file}7`));
+      this.pieces.set(`${file}2`, PieceFactory.createPawn('white', `${file}2`, this));
+      this.pieces.set(`${file}7`, PieceFactory.createPawn('black', `${file}7`, this));
     }
 
     // Place other pieces - using class constructors directly
@@ -36,13 +36,13 @@ export class Board {
     // White pieces
     pieceClasses.forEach((PieceClass, index) => {
       const file = String.fromCharCode(97 + index); // a-h
-      this.pieces.set(`${file}1`, PieceFactory.createPiece(PieceClass, 'white', `${file}1`));
+      this.pieces.set(`${file}1`, PieceFactory.createPiece(PieceClass, 'white', `${file}1`, this));
     });
 
     // Black pieces
     pieceClasses.forEach((PieceClass, index) => {
       const file = String.fromCharCode(97 + index); // a-h
-      this.pieces.set(`${file}8`, PieceFactory.createPiece(PieceClass, 'black', `${file}8`));
+      this.pieces.set(`${file}8`, PieceFactory.createPiece(PieceClass, 'black', `${file}8`, this));
     });
   }
 
