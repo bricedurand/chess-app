@@ -2,6 +2,7 @@ import { SquareNotation } from '../../types/chess';
 import { Piece } from '../Piece';
 import { Square as SquareUtil } from '../../utils/Square';
 import { Board } from '../Board';
+import { Move } from '../Move';
 
 export class Rook extends Piece {
 
@@ -18,7 +19,7 @@ export class Rook extends Piece {
   }
 
 
-  getReachableSquares(): SquareNotation[] {
+  getPossibleMoves(): Move[] {
     // Rook moves horizontally and vertically
     const directions = [
       { file: 0, rank: 1 },   // up

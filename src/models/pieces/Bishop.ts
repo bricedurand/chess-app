@@ -2,6 +2,7 @@ import { Color, SquareNotation } from '../../types/chess';
 import { Piece } from '../Piece';
 import { Square as SquareUtil } from '../../utils/Square';
 import { Board } from '../Board';
+import { Move } from '../Move';
 
 export class Bishop extends Piece {
 
@@ -14,7 +15,7 @@ export class Bishop extends Piece {
     return SquareUtil.isSameDiagonal(this.square, targetSquare);
   }
 
-  getReachableSquares(): SquareNotation[] {
+  getPossibleMoves(): Move[] {
     // Bishop moves diagonally
     const directions = [
       { file: 1, rank: 1 },   // up-right

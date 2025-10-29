@@ -1,6 +1,7 @@
 import { Color, SquareNotation } from '../types/chess';
 import { Square as SquareUtil } from '../utils/Square';
 import { Board } from './Board';
+import { Move } from './Move';
 
 export abstract class Piece {
   public readonly color: Color;
@@ -22,10 +23,10 @@ export abstract class Piece {
   abstract canMoveTo(targetSquare: SquareNotation): boolean;
 
   /**
-   * Gets all squares this piece can reach from its current position
-   * @returns Array of squares the piece can move to
+   * Gets all possible moves this piece can make from its current position
+   * @returns Array of Move objects representing all possible moves
    */
-  abstract getReachableSquares(): SquareNotation[];
+  abstract getPossibleMoves(): Move[];
 
   /**
    * Helper method to check if a target square is valid
@@ -47,10 +48,10 @@ export abstract class Piece {
    * Helper method for sliding pieces (Rook, Bishop, Queen)
    * Explores squares in a given direction until hitting a piece or board edge
    * @param directions - Array of direction vectors {file, rank}
-   * @returns Array of reachable squares
+   * @returns Array of Move objects
    */
-  protected getSlidingMoves(directions: Array<{file: number, rank: number}>): SquareNotation[] {
-    const reachableSquares: SquareNotation[] = [];
+  protected getSlidingMoves(directions: Array<{file: number, rank: number}>): Move[] {
+    const possibleMoves: Move[] = [];
     const currentCoords = SquareUtil.toCoordinates(this.square);
 
     for (const direction of directions) {
@@ -68,12 +69,19 @@ export abstract class Piece {
         
         // If square is occupied by opponent piece, we can capture it
         if (this.board.isOccupied(square)) {
-          reachableSquares.push(square);
+          const move = new Move(this.square, square, this.board, 0, {
+            isCapture: true,
+            capturedPiece: this.board.getPiece(square)
+          });
+          possibleMoves.push(move);
           break;
         }
         
         // Empty square, we can move here
-        reachableSquares.push(square);
+        const move = new Move(this.square, square, this.board, 0, {
+          isCapture: false
+        });
+        possibleMoves.push(move);
         
         // Move to next square in this direction
         file += direction.file;
@@ -81,7 +89,7 @@ export abstract class Piece {
       }
     }
 
-    return reachableSquares;
+    return possibleMoves;
   }
   
 
