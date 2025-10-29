@@ -42,6 +42,47 @@ export abstract class Piece {
 
     return true;
   }
+
+  /**
+   * Helper method for sliding pieces (Rook, Bishop, Queen)
+   * Explores squares in a given direction until hitting a piece or board edge
+   * @param directions - Array of direction vectors {file, rank}
+   * @returns Array of reachable squares
+   */
+  protected getSlidingMoves(directions: Array<{file: number, rank: number}>): SquareNotation[] {
+    const reachableSquares: SquareNotation[] = [];
+    const currentCoords = SquareUtil.toCoordinates(this.square);
+
+    for (const direction of directions) {
+      let file = currentCoords.file + direction.file;
+      let rank = currentCoords.rank + direction.rank;
+
+      // Keep moving in this direction until we hit a piece or board edge
+      while (file >= 1 && file <= 8 && rank >= 1 && rank <= 8) {
+        const square = SquareUtil.fromCoordinates({ file, rank });
+        
+        // If square is occupied by own piece, stop
+        if (this.board.isOccupiedBy(square, this.color)) {
+          break;
+        }
+        
+        // If square is occupied by opponent piece, we can capture it
+        if (this.board.isOccupied(square)) {
+          reachableSquares.push(square);
+          break;
+        }
+        
+        // Empty square, we can move here
+        reachableSquares.push(square);
+        
+        // Move to next square in this direction
+        file += direction.file;
+        rank += direction.rank;
+      }
+    }
+
+    return reachableSquares;
+  }
   
 
   get square(): SquareNotation {
