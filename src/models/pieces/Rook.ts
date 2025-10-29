@@ -1,6 +1,7 @@
 import { SquareNotation } from '../../types/chess';
 import { Piece } from '../Piece';
 import { Square as SquareUtil } from '../../utils/Square';
+import { Board } from '../Board';
 
 export class Rook extends Piece {
 
@@ -16,58 +17,48 @@ export class Rook extends Piece {
            (distance.rankDistance === 0 && distance.fileDistance > 0);
   }
 
-  getPath(from: SquareNotation, to: SquareNotation): SquareNotation[] {
-    if (!this.isValidTarget(to)) {
-      return [];
+
+  getReachableSquares(board: Board): SquareNotation[] {
+    const reachableSquares: SquareNotation[] = [];
+    const currentCoords = SquareUtil.toCoordinates(this.square);
+
+    // Check all four directions: up, down, left, right
+    const directions = [
+      { file: 0, rank: 1 },   // up
+      { file: 0, rank: -1 },  // down
+      { file: 1, rank: 0 },   // right
+      { file: -1, rank: 0 }   // left
+    ];
+
+    for (const direction of directions) {
+      let file = currentCoords.file + direction.file;
+      let rank = currentCoords.rank + direction.rank;
+
+      // Keep moving in this direction until we hit a piece or board edge
+      while (file >= 1 && file <= 8 && rank >= 1 && rank <= 8) {
+        const square = SquareUtil.fromCoordinates({ file, rank });
+        
+        // If square is occupied by own piece, stop
+        if (board.isOccupiedBy(square, this.color)) {
+          break;
+        }
+        
+        // If square is occupied by opponent piece, we can capture it
+        if (board.isOccupied(square)) {
+          reachableSquares.push(square);
+          break;
+        }
+        
+        // Empty square, we can move here
+        reachableSquares.push(square);
+        
+        // Move to next square in this direction
+        file += direction.file;
+        rank += direction.rank;
+      }
     }
 
-    const fromCoords = SquareUtil.toCoordinates(from);
-    const toCoords = SquareUtil.toCoordinates(to);
-    
-    // Rook moves horizontally or vertically
-    if (fromCoords.file === toCoords.file) {
-      // Vertical movement
-      return this.getVerticalPath(from, to);
-    } else if (fromCoords.rank === toCoords.rank) {
-      // Horizontal movement
-      return this.getHorizontalPath(from, to);
-    }
-    
-    return []; // Invalid path for rook
-  }
-
-  private getVerticalPath(from: SquareNotation, to: SquareNotation): SquareNotation[] {
-    const fromCoords = SquareUtil.toCoordinates(from);
-    const toCoords = SquareUtil.toCoordinates(to);
-    const path: SquareNotation[] = [];
-    
-    const direction = toCoords.rank > fromCoords.rank ? 1 : -1;
-    let currentRank = fromCoords.rank + direction;
-    
-    while (currentRank !== toCoords.rank) {
-      const square = SquareUtil.fromCoordinates({ file: fromCoords.file, rank: currentRank });
-      path.push(square);
-      currentRank += direction;
-    }
-    
-    return path;
-  }
-
-  private getHorizontalPath(from: SquareNotation, to: SquareNotation): SquareNotation[] {
-    const fromCoords = SquareUtil.toCoordinates(from);
-    const toCoords = SquareUtil.toCoordinates(to);
-    const path: SquareNotation[] = [];
-    
-    const direction = toCoords.file > fromCoords.file ? 1 : -1;
-    let currentFile = fromCoords.file + direction;
-    
-    while (currentFile !== toCoords.file) {
-      const square = SquareUtil.fromCoordinates({ file: currentFile, rank: fromCoords.rank });
-      path.push(square);
-      currentFile += direction;
-    }
-    
-    return path;
+    return reachableSquares;
   }
 
   get symbol(): string {

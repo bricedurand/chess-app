@@ -1,5 +1,6 @@
 import { Color, SquareNotation } from '../types/chess';
 import { Square as SquareUtil } from '../utils/Square';
+import { Board } from './Board';
 
 export abstract class Piece {
   public readonly color: Color;
@@ -19,12 +20,11 @@ export abstract class Piece {
   abstract canMoveTo(targetSquare: SquareNotation): boolean;
 
   /**
-   * Gets the path of squares between from and to (excluding endpoints)
-   * @param from - Starting square
-   * @param to - Target square
-   * @returns Array of squares in the path, empty if invalid or no path
+   * Gets all squares this piece can reach from its current position
+   * @param board - The current board state
+   * @returns Array of squares the piece can move to
    */
-  abstract getPath(from: SquareNotation, to: SquareNotation): SquareNotation[];
+  abstract getReachableSquares(board: Board): SquareNotation[];
 
   /**
    * Helper method to check if a target square is valid

@@ -179,21 +179,6 @@ export class Board {
     return allSquares.filter(square => !this.isOccupied(square));
   }
 
-  /**
-   * Checks if the path between two squares is obstructed by any piece
-   */
-  isPathObstructed(from: SquareNotation, to: SquareNotation, piece: Piece): boolean {
-    const path = piece.getPath(from, to);
-    
-    // Check each square in the path (excluding endpoints)
-    for (const square of path) {
-      if (this.isOccupied(square)) {
-        return true; // Path is blocked
-      }
-    }
-    
-    return false;
-  }
 
   /**
    * Checks if the king of the specified color is in check
