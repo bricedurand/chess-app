@@ -7,6 +7,7 @@ import { Knight } from './pieces/Knight';
 import { Bishop } from './pieces/Bishop';
 import { Queen } from './pieces/Queen';
 import { Square as SquareUtil } from '../utils/Square';
+import { Move } from './Move';
 
 export class Board {
   private pieces: Map<SquareNotation, Piece> = new Map();
@@ -84,41 +85,60 @@ export class Board {
     return piece ? piece.color === color : false;
   }
 
-  /**
-   * Moves a piece from one square to another
-   */
-  movePiece(from: SquareNotation, to: SquareNotation): Piece | undefined {
-    const piece = this.pieces.get(from);
-    if (!piece) {
-      throw new Error(`No piece at ${from}`);
-    }
-
-    // Check if there's a piece at the destination
-    const capturedPiece = this.pieces.get(to);
-    if (capturedPiece) {
-      this.capturedPieces.push(capturedPiece);
-    }
-
-    // Remove piece from old position
-    this.pieces.delete(from);
-    
-    // Place piece at new position
-    piece.square = to;
-    this.pieces.set(to, piece);
-
-    return capturedPiece;
+  isOccupiedByOpponent(square: SquareNotation, color: Color): boolean {
+    const piece = this.getPiece(square);
+    return piece ? piece.color !== color : false;
   }
 
-  /**
-   * Removes a piece from the board
-   */
-  removePiece(square: SquareNotation): Piece | undefined {
-    const piece = this.pieces.get(square);
-    if (piece) {
-      this.pieces.delete(square);
-      this.capturedPieces.push(piece);
+  getPossibleMoves(piece: Piece): Move[] {
+    const reachableSquares = piece.getReachableSquares();
+    return this.filterLegalMoves(piece,reachableSquares);
+  }
+
+  private filterLegalMoves(piece: Piece, reachableSquares: SquareNotation[]): Move[] {
+    const legalMoves: Move[] = [];
+
+    for (const reachableSquare of reachableSquares) {
+      const isCapture = this.isOccupiedByOpponent(reachableSquare, piece.color);
+      const capturedPiece = isCapture ? this.getPiece(reachableSquare) : undefined;
+
+      const candidateMove = new Move(piece.square, reachableSquare, this, 0, {
+        isCapture,
+        capturedPiece
+      });
+
+      if (!this.wouldPutKingInCheck(candidateMove)) {
+        legalMoves.push(candidateMove);
+      }
     }
-    return piece;
+
+    return legalMoves;
+  }
+
+  private executeMove(move: Move): void {
+    // remove captured piece if any
+    if(move.isCapture) {
+      this.pieces.delete(move.to);
+      this.capturedPieces.push(move.capturedPiece!);
+    }
+
+    // move piece to new square
+    this.pieces.delete(move.piece.square);
+    this.pieces.set(move.to, move.piece);
+    move.piece.square = move.to;
+  }
+
+  private undoMove(move: Move): void {
+    // move piece to old square
+    this.pieces.delete(move.to);
+    this.pieces.set(move.from, move.piece);
+    move.piece.square = move.from;
+
+    // restore captured piece if any
+    if(move.isCapture) {
+      this.pieces.set(move.to, move.capturedPiece!);
+      this.capturedPieces.pop();
+    }
   }
 
   /**
@@ -190,24 +210,18 @@ export class Board {
     const opponentColor: Color = color === 'white' ? 'black' : 'white';
     const opponentPieces = this.getPiecesByColor(opponentColor);
 
-    return opponentPieces.some(piece => piece.canMoveTo(king.square));
+    return opponentPieces.some(piece => piece.getReachableSquares().includes(king.square));
   }
 
   /**
    * Checks if this move would put the current player's king in check
    */
-  wouldPutKingInCheck(from: SquareNotation, to: SquareNotation, currentPlayer: Color): boolean {
-    // Make a temporary move
-    const tempCapturedPiece = this.movePiece(from, to);
+  wouldPutKingInCheck(move: Move): boolean {
+    this.executeMove(move);
     
-    const isInCheck = this.isKingInCheck(currentPlayer);
-    
-    // Restore the original state
-    this.movePiece(to, from);
-    if (tempCapturedPiece) {
-      this.placePiece(tempCapturedPiece, to);
-      this.removeLastCapturedPiece();
-    }
+    const isInCheck = this.isKingInCheck(move.piece.color);
+   
+    this.undoMove(move);
     
     return isInCheck;
   }
