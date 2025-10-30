@@ -26,7 +26,10 @@ export abstract class Piece {
    * Gets all possible moves this piece can make from its current position
    * @returns Array of Move objects representing all possible moves
    */
-  abstract getPossibleMoves(): Move[];
+  getPossibleMoves(): Move[] {
+    const theoreticalSquares = this.getTheoreticalSquares();
+    return this.applyBoardConstraints(theoreticalSquares);
+  }
 
   /**
    * Helper method to check if a target square is valid
@@ -45,51 +48,75 @@ export abstract class Piece {
   }
 
   /**
-   * Helper method for sliding pieces (Rook, Bishop, Queen)
-   * Explores squares in a given direction until hitting a piece or board edge
-   * @param directions - Array of direction vectors {file, rank}
-   * @returns Array of Move objects
+   * Gets theoretical squares this piece can reach based on its movement pattern
+   * This is the first step - pure movement logic without board constraints
+   * @returns Array of squares the piece can theoretically move to
    */
-  protected getSlidingMoves(directions: Array<{file: number, rank: number}>): Move[] {
+  protected abstract getTheoreticalSquares(): SquareNotation[];
+
+  /**
+   * Applies board constraints to theoretical squares and creates Move objects
+   * @param theoreticalSquares - Array of squares from getTheoreticalSquares()
+   * @returns Array of valid Move objects
+   */
+  protected applyBoardConstraints(theoreticalSquares: SquareNotation[]): Move[] {
     const possibleMoves: Move[] = [];
+
+    for (const square of theoreticalSquares) {
+      // Skip if square is occupied by own piece (obstruction)
+      if (this.board.isOccupiedBy(square, this.color)) {
+        continue;
+      }
+
+      // Check if square is occupied by opponent (capture)
+      const isCapture = this.board.isOccupied(square);
+      const capturedPiece = isCapture ? this.board.getPiece(square) : undefined;
+
+      const move = new Move(this.square, square, this.board, 0, {
+        isCapture,
+        capturedPiece
+      });
+
+      possibleMoves.push(move);
+    }
+
+    return possibleMoves;
+  }
+
+  /**
+   * Helper method for sliding pieces (Rook, Bishop, Queen)
+   * Generates theoretical squares by exploring in given directions, stopping at obstructions
+   * @param directions - Array of direction vectors {file, rank}
+   * @param maxDistance - Maximum distance to explore (default: 7 for unlimited)
+   * @returns Array of theoretical squares
+   */
+  protected getSlidingSquares(directions: Array<{file: number, rank: number}>, maxDistance: number = 7): SquareNotation[] {
+    const theoreticalSquares: SquareNotation[] = [];
     const currentCoords = SquareUtil.toCoordinates(this.square);
 
     for (const direction of directions) {
       let file = currentCoords.file + direction.file;
       let rank = currentCoords.rank + direction.rank;
+      let distance = 1;
 
-      // Keep moving in this direction until we hit a piece or board edge
-      while (file >= 1 && file <= 8 && rank >= 1 && rank <= 8) {
+      // Keep moving in this direction until we hit board edge, max distance, or obstruction
+      while (file >= 1 && file <= 8 && rank >= 1 && rank <= 8 && distance <= maxDistance) {
         const square = SquareUtil.fromCoordinates({ file, rank });
+        theoreticalSquares.push(square);
         
-        // If square is occupied by own piece, stop
-        if (this.board.isOccupiedBy(square, this.color)) {
-          break;
-        }
-        
-        // If square is occupied by opponent piece, we can capture it
+        // If this square is occupied, stop exploring this direction (obstruction blocks path)
         if (this.board.isOccupied(square)) {
-          const move = new Move(this.square, square, this.board, 0, {
-            isCapture: true,
-            capturedPiece: this.board.getPiece(square)
-          });
-          possibleMoves.push(move);
           break;
         }
-        
-        // Empty square, we can move here
-        const move = new Move(this.square, square, this.board, 0, {
-          isCapture: false
-        });
-        possibleMoves.push(move);
         
         // Move to next square in this direction
         file += direction.file;
         rank += direction.rank;
+        distance++;
       }
     }
 
-    return possibleMoves;
+    return theoreticalSquares;
   }
   
 

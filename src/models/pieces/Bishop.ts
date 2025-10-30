@@ -15,7 +15,7 @@ export class Bishop extends Piece {
     return SquareUtil.isSameDiagonal(this.square, targetSquare);
   }
 
-  getPossibleMoves(): Move[] {
+  getTheoreticalSquares(): SquareNotation[] {
     // Bishop moves diagonally
     const directions = [
       { file: 1, rank: 1 },   // up-right
@@ -24,7 +24,7 @@ export class Bishop extends Piece {
       { file: -1, rank: -1 }  // down-left
     ];
 
-    return this.getSlidingMoves(directions);
+    return this.getSlidingSquares(directions);
   }
 
   get symbol(): string {

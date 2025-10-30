@@ -19,7 +19,7 @@ export class Rook extends Piece {
   }
 
 
-  getPossibleMoves(): Move[] {
+  getTheoreticalSquares(): SquareNotation[] {
     // Rook moves horizontally and vertically
     const directions = [
       { file: 0, rank: 1 },   // up
@@ -28,7 +28,7 @@ export class Rook extends Piece {
       { file: -1, rank: 0 }   // left
     ];
 
-    return this.getSlidingMoves(directions);
+    return this.getSlidingSquares(directions);
   }
 
   get symbol(): string {
