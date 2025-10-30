@@ -6,15 +6,6 @@ import { Move } from '../Move';
 
 export class Bishop extends Piece {
 
-  canMoveTo(targetSquare: SquareNotation): boolean {
-    if (!this.isValidTarget(targetSquare)) {
-      return false;
-    }
-
-    // Bishop moves diagonally
-    return SquareUtil.isSameDiagonal(this.square, targetSquare);
-  }
-
   getTheoreticalSquares(): SquareNotation[] {
     // Bishop moves diagonally
     const directions = [
