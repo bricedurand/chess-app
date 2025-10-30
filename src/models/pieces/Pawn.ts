@@ -5,7 +5,7 @@ import { Square as SquareUtil } from '../../utils/Square';
 export class Pawn extends Piece {
 
   canMoveTo(targetSquare: SquareNotation): boolean {
-    if (!this.isValidTarget(targetSquare)) {
+    if (!SquareUtil.isValid(targetSquare)) {
       return false;
     }
 

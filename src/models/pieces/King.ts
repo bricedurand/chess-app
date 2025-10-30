@@ -4,17 +4,6 @@ import { Square as SquareUtil } from '../../utils/Square';
 
 export class King extends Piece {
 
-  canMoveTo(targetSquare: SquareNotation): boolean {
-    if (!this.isValidTarget(targetSquare)) {
-      return false;
-    }
-
-    const distance = SquareUtil.getDistance(this.square, targetSquare);
-    
-    // King moves one square in any direction
-    return distance.fileDistance <= 1 && distance.rankDistance <= 1 && 
-           (distance.fileDistance > 0 || distance.rankDistance > 0);
-  }
 
   get symbol(): string {
     return this.color === 'white' ? '♔' : '♚';

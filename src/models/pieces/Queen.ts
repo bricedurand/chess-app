@@ -4,21 +4,6 @@ import { Square as SquareUtil } from '../../utils/Square';
 
 export class Queen extends Piece {
 
-  canMoveTo(targetSquare: SquareNotation): boolean {
-    if (!this.isValidTarget(targetSquare)) {
-      return false;
-    }
-
-    const distance = SquareUtil.getDistance(this.square, targetSquare);
-    
-    // Queen moves like both rook and bishop
-    const rookMove = (distance.fileDistance === 0 && distance.rankDistance > 0) ||
-                     (distance.rankDistance === 0 && distance.fileDistance > 0);
-    const bishopMove = SquareUtil.isSameDiagonal(this.square, targetSquare);
-    
-    return rookMove || bishopMove;
-  }
-
   get symbol(): string {
     return this.color === 'white' ? '♕' : '♛';
   }

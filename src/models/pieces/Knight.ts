@@ -4,16 +4,30 @@ import { Square as SquareUtil } from '../../utils/Square';
 
 export class Knight extends Piece {
 
-  canMoveTo(targetSquare: SquareNotation): boolean {
-    if (!this.isValidTarget(targetSquare)) {
-      return false;
-    }
 
-    const distance = SquareUtil.getDistance(this.square, targetSquare);
-    
-    // Knight moves in L-shape: 2 squares in one direction, 1 in perpendicular
-    return (distance.fileDistance === 2 && distance.rankDistance === 1) ||
-           (distance.fileDistance === 1 && distance.rankDistance === 2);
+  getReachableSquares(): SquareNotation[] {
+    const reachableSquares: SquareNotation[] = [];
+    const currentCoords = SquareUtil.toCoordinates(this.square);
+    const directions = [
+      { file: 2, rank: 1 },
+      { file: 2, rank: -1 },
+      { file: -2, rank: 1 },
+      { file: -2, rank: -1 },
+      { file: 1, rank: 2 },
+      { file: 1, rank: -2 },
+      { file: -1, rank: 2 },
+      { file: -1, rank: -2 },
+    ];
+    for (const direction of directions) {
+      const candidateSquare = SquareUtil.fromCoordinates({
+        file: currentCoords.file + direction.file,
+        rank: currentCoords.rank + direction.rank,
+      });
+      if (SquareUtil.isValid(candidateSquare) && !this.board.isOccupiedBy(candidateSquare, this.color)) {
+        reachableSquares.push(candidateSquare);
+      }
+    }
+    return reachableSquares;
   }
 
   get symbol(): string {
