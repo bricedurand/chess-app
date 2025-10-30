@@ -26,7 +26,6 @@ export class Rook extends Piece {
       // Keep moving in this direction until we hit board edge, or obstruction
       while (file >= 1 && file <= 8 && rank >= 1 && rank <= 8) {
         const candidateSquare = SquareUtil.fromCoordinates({ file, rank });
-        if (!SquareUtil.isValid(candidateSquare)) break;
 
         if (this.board.isOccupiedBy(candidateSquare, this.color)) {
           // Blocked by own piece
