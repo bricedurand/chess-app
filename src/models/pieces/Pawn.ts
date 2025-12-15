@@ -4,38 +4,36 @@ import { Square as SquareUtil } from '../../utils/Square';
 
 export class Pawn extends Piece {
 
-  canMoveTo(targetSquare: SquareNotation): boolean {
-    if (!SquareUtil.isValid(targetSquare)) {
-      return false;
-    }
-
+  getReachableSquares(): SquareNotation[] {
+    const reachableSquares: SquareNotation[] = [];
     const currentCoords = SquareUtil.toCoordinates(this.square);
-    const targetCoords = SquareUtil.toCoordinates(targetSquare);
     const direction = this.color === 'white' ? 1 : -1;
     const startRank = this.color === 'white' ? 2 : 7;
     
-    // Calculate actual rank distance (preserving direction)
-    const rankDistance = targetCoords.rank - currentCoords.rank;
-    const fileDistance = Math.abs(targetCoords.file - currentCoords.file);
-    
-    // Forward move
-    if (fileDistance === 0) {
-      if (rankDistance === 1 * direction) {
-        return true;
-      }
-      // Two squares from starting position
-      if (rankDistance === 2 * direction && currentCoords.rank === startRank) {
-        return true;
+    // One square forward
+    const oneForwardSquare = SquareUtil.fromCoordinates({ file: currentCoords.file, rank: currentCoords.rank + direction });
+    if (SquareUtil.isValid(oneForwardSquare) && !this.board.isOccupied(oneForwardSquare)) {
+      reachableSquares.push(oneForwardSquare);
+
+      // Two squares forward from starting position
+      if (currentCoords.rank === startRank) {
+        const twoForwardSquare = SquareUtil.fromCoordinates({ file: currentCoords.file, rank: currentCoords.rank + 2 * direction });
+        if (SquareUtil.isValid(twoForwardSquare) && !this.board.isOccupied(twoForwardSquare)) {
+          reachableSquares.push(twoForwardSquare);
+        }
       }
     }
-    
-    // Diagonal capture (simplified - would need to check for enemy piece)
-    if (fileDistance === 1 && rankDistance === 1 * direction) {
-      return true;
+    // Captures
+    const captureDirections = [-1, 1];
+    for (const direction of captureDirections) {
+      const captureSquare = SquareUtil.fromCoordinates({ file: currentCoords.file + direction, rank: currentCoords.rank + direction });
+      if (SquareUtil.isValid(captureSquare) && this.board.isOccupiedByOpponent(captureSquare, this.color)) {
+        reachableSquares.push(captureSquare);
+      }
     }
-    
-    return false;
+    return reachableSquares;
   }
+
 
   get symbol(): string {
     return this.color === 'white' ? '♙' : '♟';
@@ -44,5 +42,4 @@ export class Pawn extends Piece {
   get notation(): string {
     return ''; // Pawns don't have a symbol in notation
   }
-
 }

@@ -1,16 +1,15 @@
 import { Color, SquareNotation } from '../types/chess';
 import { Square as SquareUtil } from '../utils/Square';
 import { Board } from './Board';
-import { Move } from './Move';
 
 export abstract class Piece {
-  public readonly color: Color;
+  public readonly _color: Color;
   private _square!: SquareNotation;
   protected _hasMoved: boolean = false;
   protected board: Board;
 
   constructor(color: Color, square: SquareNotation, board: Board) {
-    this.color = color;
+    this._color = color;
     this.board = board;
     this.square = square;
   }
@@ -23,32 +22,17 @@ export abstract class Piece {
   abstract getReachableSquares(): SquareNotation[];
 
   /**
-   * Helper method for sliding pieces (Rook, Bishop, Queen)
-   * Generates theoretical squares by exploring in given directions, stopping at obstructions
-   * @param directions - Array of direction vectors {file, rank}
-   * @param maxDistance - Maximum distance to explore (default: 7 for unlimited)
-   * @returns Array of theoretical squares
+   * Gets the symbol of the piece (e.g., "♙", "♚", "♛")
    */
-  protected getSlidingSquares(directions: Array<{file: number, rank: number}>, maxDistance: number = 7): SquareNotation[] {
-    const theoreticalSquares: SquareNotation[] = [];
-    const currentCoords = SquareUtil.toCoordinates(this.square);
+  abstract get symbol(): string;
 
-    for (const direction of directions) {
-      let file = currentCoords.file + direction.file;
-      let rank = currentCoords.rank + direction.rank;
-      let distance = 1;
+  /**
+   * Gets the notation of the piece (e.g., "P", "K", "Q")
+   */
+  abstract get notation(): string;
 
-      while (file >= 1 && file <= 8 && rank >= 1 && rank <= 8 && distance <= maxDistance) {
-        const sq = SquareUtil.fromCoordinates({ file, rank });
-        theoreticalSquares.push(sq);
-        if (this.board.isOccupied(sq)) break;
-        file += direction.file;
-        rank += direction.rank;
-        distance++;
-      }
-    }
-
-    return theoreticalSquares;
+  get color(): Color {
+    return this.color;
   }
 
   get square(): SquareNotation {
@@ -68,20 +52,10 @@ export abstract class Piece {
   }
 
   /**
-   * Gets the symbol of the piece (e.g., "♙", "♚", "♛")
-   */
-  abstract get symbol(): string;
-
-  /**
-   * Gets the notation of the piece (e.g., "P", "K", "Q")
-   */
-  abstract get notation(): string;
-
-  /**
-   * Gets the name of the piece (e.g., "pawn", "king", "queen")
+   * Gets the name of the piece (e.g., "Pawn", "King", "Queen")
    */
   get name(): string {
-    return this.constructor.name.toLowerCase();
+    return (this.constructor as any).name;
   }
 
   /**

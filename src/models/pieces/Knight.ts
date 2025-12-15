@@ -1,9 +1,8 @@
-import { Color, SquareNotation } from '../../types/chess';
+import { SquareNotation } from '../../types/chess';
 import { Piece } from '../Piece';
 import { Square as SquareUtil } from '../../utils/Square';
 
 export class Knight extends Piece {
-
 
   getReachableSquares(): SquareNotation[] {
     const reachableSquares: SquareNotation[] = [];
