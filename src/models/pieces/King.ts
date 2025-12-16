@@ -1,7 +1,5 @@
-import { SquareNotation } from '../../types/chess';
-import { SlidingPiece, SlidingDirection } from './SlidingPiece';
-
-export class King extends SlidingPiece {
+import { Piece, SlidingDirection } from '../Piece';
+export class King extends Piece {
   getDirections(): SlidingDirection[] {
     return [
       { file: 1, rank: 0 },

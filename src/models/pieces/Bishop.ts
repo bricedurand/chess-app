@@ -1,6 +1,6 @@
-import { SlidingDirection, SlidingPiece } from './SlidingPiece';
+import { Piece, SlidingDirection } from '../Piece';
 
-export class Bishop extends SlidingPiece {
+export class Bishop extends Piece {
 
   getDirections(): SlidingDirection[] {
     return[

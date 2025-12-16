@@ -1,6 +1,5 @@
-import { SlidingDirection, SlidingPiece } from './SlidingPiece';
-
-export class Queen extends SlidingPiece {
+import { Piece, SlidingDirection } from '../Piece';
+export class Queen extends Piece {
 
   // TODO : refactor to use directions from Rook and Bishop
   getDirections(): SlidingDirection[] {

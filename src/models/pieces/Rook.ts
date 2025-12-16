@@ -1,8 +1,6 @@
-import { SquareNotation } from '../../types/chess';
-import { Square as SquareUtil } from '../../utils/Square';
-import { SlidingDirection, SlidingPiece } from './SlidingPiece';
+import { SlidingDirection, Piece } from '../Piece';
 
-export class Rook extends SlidingPiece {
+export class Rook extends Piece {
 
   getDirections(): SlidingDirection[] {
     return [

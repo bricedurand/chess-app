@@ -1,6 +1,11 @@
-import { Color, SquareNotation } from '../types/chess';
-import { Square as SquareUtil } from '../utils/Square';
+import { Color, SquareNotation, SquareCoordinates } from '../types/chess';
+import { Square } from '../utils/Square';
 import { Board } from './Board';
+
+export interface SlidingDirection {
+  file: number;
+  rank: number;
+}
 
 export abstract class Piece {
   public readonly _color: Color;
@@ -13,13 +18,6 @@ export abstract class Piece {
     this.board = board;
     this.square = square;
   }
-
-  /**
-   * Gets all squares the piece can move to, without considering if king is in check
-   * A square is reachable if it is inside the board and not occupied or blocked by a piece with the same color
-   * @returns Array of squares the piece can reach
-   */
-  abstract getReachableSquares(): SquareNotation[];
 
   /**
    * Gets the symbol of the piece (e.g., "♙", "♚", "♛")
@@ -40,7 +38,7 @@ export abstract class Piece {
   }
 
   set square(newSquare: SquareNotation) {
-    if (!SquareUtil.isValid(newSquare)) {
+    if (!Square.isValid(newSquare)) {
       throw new Error(`Invalid square: ${newSquare}`);
     }
     this._square = newSquare;
@@ -57,6 +55,51 @@ export abstract class Piece {
   get name(): string {
     return (this.constructor as any).name;
   }
+
+  abstract getDirections(): SlidingDirection[];
+
+  getMaxSteps(): number {
+    return 7;
+  }
+
+    /**
+   * Gets all squares the piece can move to, without considering if king is in check
+   * A square is reachable if it is inside the board and not occupied or blocked by a piece with the same color
+   * @returns Array of squares the piece can reach
+   */
+  getReachableSquares(): SquareNotation[] {
+    const reachableSquares: SquareNotation[] = [];
+    const currentCoords = Square.toCoordinates(this.square);
+    const directions = this.getDirections();
+
+    for (const direction of directions) {
+      const candidateSquareCoordinates: SquareCoordinates = { file: currentCoords.file + direction.file, rank: currentCoords.rank + direction.rank };
+      const candidateSquare = Square.fromCoordinates(candidateSquareCoordinates);
+
+      let steps = 1;
+
+      while (steps <= this.getMaxSteps() &&
+             Square.isValid(candidateSquare)) {
+
+        // Stop if occupied by own piece
+        if (this.board.isOccupiedBy(candidateSquare, this.color)) {
+          break;
+        }
+
+        reachableSquares.push(candidateSquare);
+
+        // Can capture opponent piece but stop afterwards
+        if (this.board.isOccupiedByOpponent(candidateSquare, this.color)) {
+          break;
+        }
+
+        steps++;
+      }
+    }
+
+    return reachableSquares;
+  }
+
 
   /**
    * Example: "white pawn at e2"
