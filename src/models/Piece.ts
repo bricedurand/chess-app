@@ -2,7 +2,7 @@ import { Color, SquareNotation, SquareCoordinates } from '../types/chess';
 import { Square } from '../utils/Square';
 import { Board } from './Board';
 
-export interface SlidingDirection {
+export interface MoveDirection {
   file: number;
   rank: number;
   
@@ -60,7 +60,7 @@ export abstract class Piece {
     return (this.constructor as any).name;
   }
 
-  abstract getDirections(): SlidingDirection[];
+  abstract getDirections(): MoveDirection[];
 
   abstract getMaxSteps(): number;
 

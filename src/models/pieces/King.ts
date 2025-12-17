@@ -1,6 +1,6 @@
-import { Piece, SlidingDirection } from '../Piece';
+import { Piece, MoveDirection } from '../Piece';
 export class King extends Piece {
-  getDirections(): SlidingDirection[] {
+  getDirections(): MoveDirection[] {
     return [
       { file: 1, rank: 0 },
       { file: 1, rank: 1 },

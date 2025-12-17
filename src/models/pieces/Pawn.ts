@@ -1,5 +1,5 @@
 import { Color, SquareNotation } from '../../types/chess';
-import { Piece, SlidingDirection } from '../Piece';
+import { Piece, MoveDirection } from '../Piece';
 import { Square as SquareUtil } from '../../utils/Square';
 
 export class Pawn extends Piece {
@@ -8,7 +8,7 @@ export class Pawn extends Piece {
     return 1;
   }
 
-  getDirections(): SlidingDirection[] {
+  getDirections(): MoveDirection[] {
     const rankDirection = this.color === 'white' ? 1 : -1;
     const directions = [
       { file: 0, rank: rankDirection, canCapture: false, maxSteps: this.isAtStartingPosition() ? 2 : 1 }, // forward

@@ -1,11 +1,11 @@
-import { Piece, SlidingDirection } from '../Piece';
+import { Piece, MoveDirection } from '../Piece';
 
 export class Bishop extends Piece {
 
   getMaxSteps(): number {
     return 7;
   }
-  getDirections(): SlidingDirection[] {
+  getDirections(): MoveDirection[] {
     return[
       { file: 1, rank: 1 },   // up-right
       { file: 1, rank: -1 },  // down-right

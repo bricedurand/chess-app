@@ -1,11 +1,11 @@
-import { SlidingDirection, Piece } from '../Piece';
+import { MoveDirection, Piece } from '../Piece';
 
 export class Rook extends Piece {
   getMaxSteps(): number {
     return 7;
   }
 
-  getDirections(): SlidingDirection[] {
+  getDirections(): MoveDirection[] {
     return [
       { file: 0, rank: 1 },   // up
       { file: 0, rank: -1 },  // down
