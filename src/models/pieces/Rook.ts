@@ -1,6 +1,9 @@
 import { SlidingDirection, Piece } from '../Piece';
 
 export class Rook extends Piece {
+  getMaxSteps(): number {
+    return 7;
+  }
 
   getDirections(): SlidingDirection[] {
     return [

@@ -1,5 +1,8 @@
 import { Piece, SlidingDirection } from '../Piece';
 export class Queen extends Piece {
+  getMaxSteps(): number {
+    return 7;
+  }
 
   // TODO : refactor to use directions from Rook and Bishop
   getDirections(): SlidingDirection[] {

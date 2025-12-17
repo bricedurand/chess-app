@@ -58,9 +58,7 @@ export abstract class Piece {
 
   abstract getDirections(): SlidingDirection[];
 
-  getMaxSteps(): number {
-    return 7;
-  }
+  abstract getMaxSteps(): number;
 
     /**
    * Gets all squares the piece can move to, without considering if king is in check
