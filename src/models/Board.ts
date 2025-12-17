@@ -116,7 +116,7 @@ export class Board {
     }
   }
 
-  getPossibleMoves(piece: Piece): Move[] {
+  getLegalMoves(piece: Piece): Move[] {
     const reachableSquares = piece.getReachableSquares();
     return this.filterLegalMoves(piece,reachableSquares);
   }

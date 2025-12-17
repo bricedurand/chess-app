@@ -85,13 +85,9 @@ export class Game {
   private hasLegalMoves(color: Color): boolean {
     const pieces = this.board.getPiecesByColor(color);
     for (const piece of pieces) {
-      const possibleSquares = this.getPossibleSquares(piece);
-      for (const square of possibleSquares) {
-        const candidateMove = new Move(piece.square, square, this.board);
-        const validatedMove = candidateMove.validate(color);
-        if (validatedMove.isValid) {
-          return true; // Found a legal move
-        }
+      const legalMoves = this.board.getLegalMoves(piece);
+      if (legalMoves.length > 0) {
+        return true;
       }
     }
     return false; // No legal moves found
@@ -103,22 +99,6 @@ export class Game {
 
   private isStalemate(color: Color): boolean {
     return !this.board.isKingInCheck(color) && !this.hasLegalMoves(color);
-  }
-
-  /**
-   * Gets possible squares a piece can move to. Brute force method.
-   */
-  private getPossibleSquares(piece: Piece): SquareNotation[] {
-    const possibleSquares: SquareNotation[] = [];
-    const allSquares = SquareUtil.getAllSquares();
-
-    for (const square of allSquares) {
-      if (square !== piece.square && piece.canMoveTo(square)) {
-        possibleSquares.push(square);
-      }
-    }
-
-    return possibleSquares;
   }
 
   /**
