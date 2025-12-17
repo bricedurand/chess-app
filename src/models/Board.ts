@@ -148,7 +148,7 @@ export class Board {
     move.piece.square = move.to;
   }
 
-  private undoMove(move: Move): void {
+  undoMove(move: Move): void {
     // move piece to old square
     this.pieces.delete(move.to);
     this.pieces.set(move.from, move.piece);

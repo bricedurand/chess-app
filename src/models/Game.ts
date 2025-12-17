@@ -149,12 +149,7 @@ export class Game {
     const lastMove = this.moveHistory.pop()!;
     
     // Move piece back
-    this.board.movePiece(lastMove.to, lastMove.from);
-    
-    // Restore captured piece if any
-    if (lastMove.isCapture && lastMove.capturedPiece) {
-      this.board.placePiece(lastMove.capturedPiece, lastMove.to);
-    }
+    this.board.undoMove(lastMove);
 
     // Switch players back
     this.switchPlayers();
