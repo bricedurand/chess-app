@@ -90,6 +90,32 @@ export class Board {
     return piece ? piece.color !== color : false;
   }
 
+  executeMove(move: Move): void {
+    // remove captured piece if any
+    if(move.isCapture) {
+      this.pieces.delete(move.to);
+      this.capturedPieces.push(move.capturedPiece!);
+    }
+
+    // move piece to new square
+    this.pieces.delete(move.piece.square);
+    this.pieces.set(move.to, move.piece);
+    move.piece.square = move.to;
+  }
+
+  undoMove(move: Move): void {
+    // move piece to old square
+    this.pieces.delete(move.to);
+    this.pieces.set(move.from, move.piece);
+    move.piece.square = move.from;
+
+    // restore captured piece if any
+    if(move.isCapture) {
+      this.pieces.set(move.to, move.capturedPiece!);
+      this.capturedPieces.pop();
+    }
+  }
+
   getPossibleMoves(piece: Piece): Move[] {
     const reachableSquares = piece.getReachableSquares();
     return this.filterLegalMoves(piece,reachableSquares);
@@ -133,52 +159,6 @@ export class Board {
     this.undoMove(move);
     
     return isInCheck;
-  }
-
-  private executeMove(move: Move): void {
-    // remove captured piece if any
-    if(move.isCapture) {
-      this.pieces.delete(move.to);
-      this.capturedPieces.push(move.capturedPiece!);
-    }
-
-    // move piece to new square
-    this.pieces.delete(move.piece.square);
-    this.pieces.set(move.to, move.piece);
-    move.piece.square = move.to;
-  }
-
-  undoMove(move: Move): void {
-    // move piece to old square
-    this.pieces.delete(move.to);
-    this.pieces.set(move.from, move.piece);
-    move.piece.square = move.from;
-
-    // restore captured piece if any
-    if(move.isCapture) {
-      this.pieces.set(move.to, move.capturedPiece!);
-      this.capturedPieces.pop();
-    }
-  }
-
-  /**
-   * Places a piece on the board
-   */
-  placePiece(piece: Piece, square: SquareNotation): void {
-    if (this.isOccupied(square)) {
-      throw new Error(`Square ${square} is already occupied`);
-    }
-    
-    piece.square = square;
-    this.pieces.set(square, piece);
-  }
-
-  /**
-   * Removes the last captured piece from the captured pieces array
-   * Used for undoing temporary moves
-   */
-  removeLastCapturedPiece(): Piece | undefined {
-    return this.capturedPieces.pop();
   }
 
   /**
