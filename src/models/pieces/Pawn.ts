@@ -9,7 +9,7 @@ export class Pawn extends Piece {
   }
 
   getDirections(): MoveDirection[] {
-    const rankDirection = this.color === 'white' ? 1 : -1;
+    const rankDirection = this.isWhite() ? 1 : -1;
     const defaultMaxSteps = 1;
     const directions = [
       { file: 0, rank: rankDirection, canCapture: false, maxSteps: this.isAtStartingPosition() ? 2 : defaultMaxSteps }, // forward
@@ -22,11 +22,11 @@ export class Pawn extends Piece {
 
   private isAtStartingPosition(): boolean {
     const rank = SquareUtil.toCoordinates(this.square).rank;
-    return (this.color === 'white' && rank === 2) || (this.color === 'black' && rank === 7);
+    return (this.isWhite() && rank === 2) || (this.isBlack() && rank === 7);
   }
 
   get symbol(): string {
-    return this.color === 'white' ? '♙' : '♟';
+    return this.isWhite() ? '♙' : '♟';
   }
 
   get notation(): string {

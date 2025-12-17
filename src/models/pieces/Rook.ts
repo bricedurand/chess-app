@@ -12,7 +12,7 @@ export class Rook extends Piece {
   }
 
   get symbol(): string {
-    return this.color === 'white' ? '♖' : '♜';
+    return this.isWhite() ? '♖' : '♜';
   }
 
   get notation(): string {

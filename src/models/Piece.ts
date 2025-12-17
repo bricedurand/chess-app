@@ -34,6 +34,14 @@ export abstract class Piece {
     return this.color;
   }
 
+  isWhite(): boolean {
+    return this._color === 'white';
+  }
+  
+  isBlack(): boolean {
+    return this._color === 'black';
+  }
+
   get square(): SquareNotation {
     return this._square;
   }

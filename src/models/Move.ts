@@ -127,7 +127,7 @@ export class Move {
    * Creates a historical move from a candidate move
    */
   toHistoricalMove(moveNumber: number): Move {
-    const opponentColor: Color = this.piece.color === 'white' ? 'black' : 'white';
+    const opponentColor: Color = this.piece.isWhite() ? 'black' : 'white';
     
     return new Move(
       this.from,
@@ -187,8 +187,8 @@ export class Move {
     if (!(this.piece instanceof Pawn)) return false;
     
     const targetRank = parseInt(this.to[1]);
-    return (this.piece.color === 'white' && targetRank === 8) ||
-           (this.piece.color === 'black' && targetRank === 1);
+    return (this.piece.isWhite() && targetRank === 8) ||
+           (this.piece.isBlack() && targetRank === 1);
   }
 
   /**
