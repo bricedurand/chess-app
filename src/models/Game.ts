@@ -82,10 +82,6 @@ export class Game {
     this.currentPlayer = this.getOpponentColor();
   }
 
-  private isKingInCheck(color: Color): boolean {
-    return this.board.isKingInCheck(color);
-  }
-
   private hasLegalMoves(color: Color): boolean {
     const pieces = this.board.getPiecesByColor(color);
     for (const piece of pieces) {
@@ -102,11 +98,11 @@ export class Game {
   }
 
   private isCheckmate(color: Color): boolean {
-    return this.isKingInCheck(color) && !this.hasLegalMoves(color);
+    return this.board.isKingInCheck(color) && !this.hasLegalMoves(color);
   }
 
   private isStalemate(color: Color): boolean {
-    return !this.isKingInCheck(color) && !this.hasLegalMoves(color);
+    return !this.board.isKingInCheck(color) && !this.hasLegalMoves(color);
   }
 
   /**
