@@ -5,6 +5,10 @@ import { Board } from './Board';
 export interface SlidingDirection {
   file: number;
   rank: number;
+  
+  // speacial rules for pawns
+  canCapture?: boolean; // pawns can only capture diagonally
+  maxSteps?: number; // pawns can move 2 steps from starting position
 }
 
 export abstract class Piece {
@@ -75,8 +79,8 @@ export abstract class Piece {
       const candidateSquare = Square.fromCoordinates(candidateSquareCoordinates);
 
       let steps = 1;
-
-      while (steps <= this.getMaxSteps() &&
+      let maxSteps = direction.maxSteps ?? this.getMaxSteps();
+      while (steps <= maxSteps &&
              Square.isValid(candidateSquare)) {
 
         // Stop if occupied by own piece
@@ -87,7 +91,8 @@ export abstract class Piece {
         reachableSquares.push(candidateSquare);
 
         // Can capture opponent piece but stop afterwards
-        if (this.board.isOccupiedByOpponent(candidateSquare, this.color)) {
+        if (direction.canCapture !== false &&
+            this.board.isOccupiedByOpponent(candidateSquare, this.color)) {
           break;
         }
 
