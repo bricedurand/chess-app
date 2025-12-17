@@ -99,13 +99,7 @@ export class Board {
     const legalMoves: Move[] = [];
 
     for (const reachableSquare of reachableSquares) {
-      const isCapture = this.isOccupiedByOpponent(reachableSquare, piece.color);
-      const capturedPiece = isCapture ? this.getPiece(reachableSquare) : undefined;
-
-      const candidateMove = new Move(piece.square, reachableSquare, this, 0, {
-        isCapture,
-        capturedPiece
-      });
+      const candidateMove = new Move(piece.square, reachableSquare, this, 0);
 
       if (!this.wouldPutKingInCheck(candidateMove)) {
         legalMoves.push(candidateMove);
@@ -113,6 +107,32 @@ export class Board {
     }
 
     return legalMoves;
+  }
+
+    /**
+   * Checks if the king of the specified color is in check
+   */
+  isKingInCheck(color: Color): boolean {
+    const king = this.findKing(color);
+    if (!king) return false;
+
+    const opponentColor: Color = color === 'white' ? 'black' : 'white';
+    const opponentPieces = this.getPiecesByColor(opponentColor);
+
+    return opponentPieces.some(piece => piece.getReachableSquares().includes(king.square));
+  }
+
+  /**
+   * Checks if this move would put the current player's king in check
+   */
+  wouldPutKingInCheck(move: Move): boolean {
+    this.executeMove(move);
+    
+    const isInCheck = this.isKingInCheck(move.piece.color);
+   
+    this.undoMove(move);
+    
+    return isInCheck;
   }
 
   private executeMove(move: Move): void {
@@ -198,34 +218,6 @@ export class Board {
     const allSquares = SquareUtil.getAllSquares();
     return allSquares.filter(square => !this.isOccupied(square));
   }
-
-
-  /**
-   * Checks if the king of the specified color is in check
-   */
-  isKingInCheck(color: Color): boolean {
-    const king = this.findKing(color);
-    if (!king) return false;
-
-    const opponentColor: Color = color === 'white' ? 'black' : 'white';
-    const opponentPieces = this.getPiecesByColor(opponentColor);
-
-    return opponentPieces.some(piece => piece.getReachableSquares().includes(king.square));
-  }
-
-  /**
-   * Checks if this move would put the current player's king in check
-   */
-  wouldPutKingInCheck(move: Move): boolean {
-    this.executeMove(move);
-    
-    const isInCheck = this.isKingInCheck(move.piece.color);
-   
-    this.undoMove(move);
-    
-    return isInCheck;
-  }
-
 
   /**
    * Returns a string representation of the board
