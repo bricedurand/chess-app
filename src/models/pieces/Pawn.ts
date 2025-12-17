@@ -10,10 +10,11 @@ export class Pawn extends Piece {
 
   getDirections(): MoveDirection[] {
     const rankDirection = this.color === 'white' ? 1 : -1;
+    const defaultMaxSteps = 1;
     const directions = [
-      { file: 0, rank: rankDirection, canCapture: false, maxSteps: this.isAtStartingPosition() ? 2 : 1 }, // forward
-      { file: -1, rank: rankDirection }, // capture left
-      { file: 1, rank: rankDirection }   // capture right
+      { file: 0, rank: rankDirection, canCapture: false, maxSteps: this.isAtStartingPosition() ? 2 : defaultMaxSteps }, // forward
+      { file: -1, rank: rankDirection, maxSteps: defaultMaxSteps }, // capture left
+      { file: 1, rank: rankDirection, maxSteps: defaultMaxSteps }   // capture right
     ];
   
     return directions;

@@ -5,10 +5,8 @@ import { Board } from './Board';
 export interface MoveDirection {
   file: number;
   rank: number;
-  
-  // speacial rules for pawns
-  canCapture?: boolean; // pawns can only capture diagonally
-  maxSteps?: number; // pawns can move 2 steps from starting position
+  maxSteps: number;
+  canCapture?: boolean; // special rule for pawns who can only capture diagonally
 }
 
 export abstract class Piece {
@@ -62,8 +60,6 @@ export abstract class Piece {
 
   abstract getDirections(): MoveDirection[];
 
-  abstract getMaxSteps(): number;
-
     /**
    * Gets all squares the piece can move to, without considering if king is in check
    * A square is reachable if it is inside the board and not occupied or blocked by a piece with the same color
@@ -79,8 +75,7 @@ export abstract class Piece {
       const candidateSquare = Square.fromCoordinates(candidateSquareCoordinates);
 
       let steps = 1;
-      let maxSteps = direction.maxSteps ?? this.getMaxSteps();
-      while (steps <= maxSteps &&
+      while (steps <= direction.maxSteps &&
              Square.isValid(candidateSquare)) {
 
         // Stop if occupied by own piece
