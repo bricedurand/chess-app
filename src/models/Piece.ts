@@ -57,7 +57,7 @@ export abstract class Piece {
    * Gets the name of the piece (e.g., "Pawn", "King", "Queen")
    */
   get name(): string {
-    return (this.constructor as any).name;
+    return this.constructor.name;
   }
 
   abstract getDirections(): MoveDirection[];
