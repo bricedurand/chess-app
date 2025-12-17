@@ -12,7 +12,6 @@ export interface MoveDirection {
 export abstract class Piece {
   public readonly _color: Color;
   private _square!: SquareNotation;
-  protected _hasMoved: boolean = false;
   protected board: Board;
 
   constructor(color: Color, square: SquareNotation, board: Board) {
@@ -44,11 +43,6 @@ export abstract class Piece {
       throw new Error(`Invalid square: ${newSquare}`);
     }
     this._square = newSquare;
-    this._hasMoved = true;
-  }
-
-  get hasMoved(): boolean {
-    return this._hasMoved;
   }
 
   /**
