@@ -6,7 +6,6 @@ export interface MoveDirection {
   file: number;
   rank: number;
   maxSteps: number;
-  canCapture?: boolean; // special rule for pawns who can only capture diagonally
 }
 
 export abstract class Piece {
@@ -88,8 +87,7 @@ export abstract class Piece {
         reachableSquares.push(candidateSquare);
 
         // Can capture opponent piece but stop afterwards
-        if (direction.canCapture !== false &&
-            this.board.isOccupiedByOpponent(candidateSquare, this.color)) {
+        if (this.board.isOccupiedByOpponent(candidateSquare, this.color)) {
           break;
         }
 

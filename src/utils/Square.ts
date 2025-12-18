@@ -7,13 +7,19 @@ export class Square {
   /**
    * Validates if a square notation is valid (e.g., "e5", "a1")
    */
-  static isValid(square: SquareNotation): boolean {
-    if (square.length !== 2) return false;
-    
-    const file = square[0];
-    const rank = square[1];
-    
-    return this.FILES.includes(file) && this.RANKS.includes(rank);
+  static isValid(square: SquareNotation): boolean;
+  static isValid(square: SquareCoordinates): boolean;
+  static isValid(square: SquareNotation | SquareCoordinates): boolean {
+    if (typeof square === 'string') {
+      if (square.length !== 2) return false;
+      
+      const file = square[0];
+      const rank = square[1];
+
+      return this.FILES.includes(file) && this.RANKS.includes(rank);
+    } else {
+      return square.file >= 1 && square.file <= 8 && square.rank >= 1 && square.rank <= 8;
+    }
   }
 
   /**
@@ -45,6 +51,18 @@ export class Square {
     const rankChar = this.RANKS[coordinates.rank - 1];
     
     return fileChar + rankChar;
+  }
+
+  static offset(square: SquareNotation, fileOffset: number, rankOffset: number): SquareNotation | null {
+    const coords = this.toCoordinates(square);
+    const newFile = coords.file + fileOffset;
+    const newRank = coords.rank + rankOffset;
+
+    if (!this.isValid({ file: newFile, rank: newRank })) {
+      return null; // Out of bounds
+    }
+
+    return this.fromCoordinates({ file: newFile, rank: newRank });
   }
 
   /**
