@@ -4,6 +4,81 @@ export class Square {
   private static readonly FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
   private static readonly RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'];
 
+  private _notation: SquareNotation;
+  private _coordinates: SquareCoordinates;
+
+  constructor(input: SquareNotation | SquareCoordinates) {
+    if (typeof input === 'string') {
+      this._notation = input;
+      this._coordinates = Square.toCoordinates(input);
+    } else {
+      this._coordinates = input;
+      this._notation = Square.fromCoordinates(input);
+    }
+  }
+
+  get notation(): SquareNotation {
+    return this._notation;
+  }
+
+  get coordinates(): SquareCoordinates {
+    return { ...this._coordinates };
+  }
+
+  get file(): number {
+    return this._coordinates.file;
+  }
+
+  get rank(): number {
+    return this._coordinates.rank;
+  }
+
+  /**
+   * Creates a square offset from this one
+   */
+  offset(fileOffset: number, rankOffset: number): Square | null {
+    const newFile = this.file + fileOffset;
+    const newRank = this.rank + rankOffset;
+
+    if (newFile < 1 || newFile > 8 || newRank < 1 || newRank > 8) {
+      return null;
+    }
+
+    return new Square({ file: newFile, rank: newRank });
+  }
+
+  /**
+   * Gets the distance to another square
+   */
+  distanceTo(other: Square): SquareDistance {
+    return {
+      fileDistance: Math.abs(this.file - other.file),
+      rankDistance: Math.abs(this.rank - other.rank)
+    };
+  }
+
+  /**
+   * Checks if this square is on the same diagonal as another
+   */
+  isSameDiagonal(other: Square): boolean {
+    const distance = this.distanceTo(other);
+    return distance.fileDistance === distance.rankDistance && distance.fileDistance > 0;
+  }
+
+  /**
+   * Checks if this square is on the same file as another
+   */
+  isSameFile(other: Square): boolean {
+    return this.file === other.file;
+  }
+
+  /**
+   * Checks if this square is on the same rank as another
+   */
+  isSameRank(other: Square): boolean {
+    return this.rank === other.rank;
+  }
+
   /**
    * Validates if a square notation is valid (e.g., "e5", "a1")
    */
@@ -53,64 +128,16 @@ export class Square {
     return fileChar + rankChar;
   }
 
-  static offset(square: SquareNotation, fileOffset: number, rankOffset: number): SquareNotation | null {
-    const coords = this.toCoordinates(square);
-    const newFile = coords.file + fileOffset;
-    const newRank = coords.rank + rankOffset;
-
-    if (!this.isValid({ file: newFile, rank: newRank })) {
-      return null; // Out of bounds
-    }
-
-    return this.fromCoordinates({ file: newFile, rank: newRank });
-  }
-
-  /**
-   * Gets the distance between two squares
-   */
-  static getDistance(from: SquareNotation, to: SquareNotation): SquareDistance {
-    const fromCoords = this.toCoordinates(from);
-    const toCoords = this.toCoordinates(to);
-
-    return {
-      fileDistance: Math.abs(toCoords.file - fromCoords.file),
-      rankDistance: Math.abs(toCoords.rank - fromCoords.rank)
-    };
-  }
-
-  /**
-   * Checks if two squares are on the same diagonal
-   */
-  static isSameDiagonal(square1: SquareNotation, square2: SquareNotation): boolean {
-    const distance = this.getDistance(square1, square2);
-    return distance.fileDistance === distance.rankDistance && distance.fileDistance > 0;
-  }
-
-  /**
-   * Checks if two squares are on the same file (column)
-   */
-  static isSameFile(square1: SquareNotation, square2: SquareNotation): boolean {
-    return square1[0] === square2[0];
-  }
-
-  /**
-   * Checks if two squares are on the same rank (row)
-   */
-  static isSameRank(square1: SquareNotation, square2: SquareNotation): boolean {
-    return square1[1] === square2[1];
-  }
-
   /**
    * Gets all squares on the board
    */
-  static getAllSquares(): SquareNotation[] {
-    const squares: SquareNotation[] = [];
+  static getAllSquares(): Square[] {
+    const squares: Square[] = [];
     for (let file of this.FILES) {
       for (let rank of this.RANKS) {
-        squares.push(file + rank);
+        squares.push(new Square(file + rank));
       }
     }
     return squares;
   }
 }
-
