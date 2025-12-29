@@ -1,13 +1,11 @@
-import { Color, SquareNotation } from '../types/chess';
+import { Color } from '../types/chess';
 import { Board } from './Board';
-import { Piece } from './Piece';
 import { Move } from './Move';
-import { Square as SquareUtil } from '../utils/Square';
+import { Square } from '../utils/Square';
 
 export interface GameState {
   currentPlayer: Color;
   moveHistory: Move[];
-  capturedPieces: Piece[];
   isGameOver: boolean;
   winner?: Color;
   gameResult?: 'checkmate' | 'stalemate';
@@ -29,7 +27,6 @@ export class Game {
     return {
       currentPlayer: this.currentPlayer,
       moveHistory: [...this.moveHistory],
-      capturedPieces: this.board.getCapturedPieces(),
       isGameOver: this.isGameOver,
       winner: this.winner,
       gameResult: this.gameResult
@@ -51,7 +48,7 @@ export class Game {
   /**
    * Attempts to make a move
    */
-  makeMove(from: SquareNotation, to: SquareNotation): boolean {
+  makeMove(from: Square, to: Square): boolean {
     if (this.isGameOver) {
       throw new Error('Game is over');
     }
