@@ -46,6 +46,17 @@ export class Game {
   }
 
   /**
+   * Gets legal moves for a piece at the given square
+   */
+  getLegalMovesForSquare(square: Square): Move[] {
+    const piece = this.board.getPiece(square);
+    if (!piece || piece.color !== this.currentPlayer) {
+      return [];
+    }
+    return this.board.getLegalMoves(piece);
+  }
+
+  /**
    * Attempts to make a move
    */
   makeMove(from: Square, to: Square): boolean {
@@ -53,24 +64,32 @@ export class Game {
       throw new Error('Game is over');
     }
 
-    const candidateMove = new Move(from, to, this.board);
-
-    const validatedMove = candidateMove.validate(this.currentPlayer);
-
-    if (!validatedMove.isValid) {
-      throw new Error(`Invalid move: ${validatedMove.validationErrors.join(', ')}`);
+    const piece = this.board.getPiece(from);
+    if (!piece) {
+      throw new Error(`No piece at ${from}`);
+    }
+    if (piece.color !== this.currentPlayer) {
+      throw new Error(`It's ${this.currentPlayer}'s turn`);
     }
 
-    validatedMove.execute();
+    const legalMoves = this.board.getLegalMoves(piece);
+    const isLegal = legalMoves.some(move => move.to.equals(to));
+    if (!isLegal) {
+      throw new Error(`Invalid move: ${piece.name} cannot move from ${from} to ${to}`);
+    }
+
+    const move = new Move(from, to, this.board);
+    this.board.executeMove(move);
     
     const moveNumber = Math.floor(this.moveHistory.length / 2) + 1;
-    const historicalMove = validatedMove.toHistoricalMove(moveNumber);
+    const opponentColor = this.getOpponentColor();
+    const isCheck = this.board.isKingInCheck(opponentColor);
+    const isCheckmate = isCheck && !this.hasLegalMoves(opponentColor);
+    const historicalMove = move.toHistoricalMove(moveNumber, isCheck, isCheckmate);
     this.moveHistory.push(historicalMove);
 
     this.checkGameOver();
-
     this.switchPlayers();
-
     return true;
   }
 

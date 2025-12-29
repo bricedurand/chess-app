@@ -16,8 +16,6 @@ export class Move {
   public readonly isCheckmate: boolean;
   public readonly timestamp: Date;
   public readonly capturedPiece?: Piece;
-  public readonly isValid: boolean;
-  public readonly validationErrors: string[];
   public readonly board: Board;
 
   constructor(
@@ -31,8 +29,6 @@ export class Move {
       isCheckmate?: boolean;
       notation?: string;
       capturedPiece?: Piece;
-      isValid?: boolean;
-      validationErrors?: string[];
     } = {}
   ) {
     // Square objects are already validated during construction
@@ -42,90 +38,17 @@ export class Move {
     this.piece = board.getPiece(from)!;
     this.moveNumber = moveNumber;
     this.isCapture = options.isCapture ?? !!board.getPiece(to);
-    this.isCheck = options.isCheck || false;
-    this.isCheckmate = options.isCheckmate || false;
+    this.isCheck = options.isCheck ?? false;
+    this.isCheckmate = options.isCheckmate ?? false;
     this.capturedPiece = options.capturedPiece || board.getPiece(to);
-    this.isValid = options.isValid || false;
-    this.validationErrors = options.validationErrors || [];
     this.notation = options.notation || this.generateNotation();
     this.timestamp = new Date();
   }
 
   /**
-   * Validates this move against the current board state
-   */
-  validate(currentPlayer: Color): Move {
-    const errors: string[] = [];
-
-    // Basic validation
-    if (!SquareUtil.isValid(this.from) || !SquareUtil.isValid(this.to)) {
-      errors.push('Invalid square notation');
-    }
-
-    if (this.from === this.to) {
-      errors.push('Cannot move to the same square');
-    }
-
-    if (!this.piece) {
-      errors.push(`No piece at ${this.from}`);
-    } else {
-      if (!this.isCorrectPlayer(currentPlayer)) {
-        errors.push(`It's ${currentPlayer}'s turn, but piece is ${this.piece.color}`);
-      }
-
-      if (!this.piece.canMoveTo(this.to)) {
-        errors.push(`${this.piece.name} cannot move from ${this.from} to ${this.to}`);
-      }
-
-      // Check if target square is occupied by own piece
-      if (this.board.isOccupiedBy(this.to, this.piece.color)) {
-        errors.push('Cannot capture own piece');
-      }
-
-      // Check if move would put own king in check
-      if (this.board.wouldPutKingInCheck(this.from, this.to, currentPlayer)) {
-        errors.push('Move would put own king in check');
-      }
-    }
-
-    return new Move(
-      this.from,
-      this.to,
-      this.board,
-      this.moveNumber,
-      {
-        isCapture: this.isCapture,
-        isCheck: this.isCheck,
-        isCheckmate: this.isCheckmate,
-        notation: this.notation,
-        capturedPiece: this.capturedPiece,
-        isValid: errors.length === 0,
-        validationErrors: errors
-      }
-    );
-  }
-
-  private isCorrectPlayer(color: Color): boolean {
-    return this.piece.color === color;
-  }
-
-  /**
-   * Executes this move on the board
-   */
-  execute(): Piece | undefined {
-    if (!this.isValid) {
-      throw new Error(`Cannot execute invalid move: ${this.validationErrors.join(', ')}`);
-    }
-
-    return this.board.movePiece(this.from, this.to);
-  }
-
-  /**
    * Creates a historical move from a candidate move
    */
-  toHistoricalMove(moveNumber: number): Move {
-    const opponentColor: Color = this.piece.isWhite() ? 'black' : 'white';
-    
+  toHistoricalMove(moveNumber: number, isCheck: boolean, isCheckmate: boolean): Move {
     return new Move(
       this.from,
       this.to,
@@ -133,12 +56,10 @@ export class Move {
       moveNumber,
       {
         isCapture: this.isCapture,
-        isCheck: this.board.isKingInCheck(opponentColor),
-        isCheckmate: this.isCheckmate,
-        notation: this.notation,
-        capturedPiece: this.capturedPiece,
-        isValid: true,
-        validationErrors: []
+        isCheck,
+        isCheckmate,
+        notation: this.generateNotation(),
+        capturedPiece: this.capturedPiece
       }
     );
   }
