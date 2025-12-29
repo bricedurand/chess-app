@@ -1,4 +1,4 @@
-import { SquareNotation, Color } from '../types/chess';
+import { Color } from '../types/chess';
 import { Piece } from './Piece';
 import { PieceFactory } from './PieceFactory';
 import { King } from './pieces/King';
@@ -6,11 +6,11 @@ import { Rook } from './pieces/Rook';
 import { Knight } from './pieces/Knight';
 import { Bishop } from './pieces/Bishop';
 import { Queen } from './pieces/Queen';
-import { Square as SquareUtil } from '../utils/Square';
+import { Square } from '../utils/Square';
 import { Move } from './Move';
 
 export class Board {
-  private pieces: Map<SquareNotation, Piece> = new Map();
+  private pieces: Map<Square, Piece> = new Map();
   private capturedPieces: Piece[] = [];
 
   constructor() {
@@ -27,8 +27,8 @@ export class Board {
 
     // Place pawns
     for (let file of ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']) {
-      this.pieces.set(`${file}2`, PieceFactory.createPawn('white', `${file}2`, this));
-      this.pieces.set(`${file}7`, PieceFactory.createPawn('black', `${file}7`, this));
+      this.pieces.set(new Square(`${file}2`), PieceFactory.createPawn('white', new Square(`${file}2`), this));
+      this.pieces.set(new Square(`${file}7`), PieceFactory.createPawn('black', new Square(`${file}7`), this));
     }
 
     // Place other pieces - using class constructors directly
@@ -37,20 +37,22 @@ export class Board {
     // White pieces
     pieceClasses.forEach((PieceClass, index) => {
       const file = String.fromCharCode(97 + index); // a-h
-      this.pieces.set(`${file}1`, PieceFactory.createPiece(PieceClass, 'white', `${file}1`, this));
+      const square = new Square(`${file}1`);
+      this.pieces.set(square, PieceFactory.createPiece(PieceClass, 'white', square, this));
     });
 
     // Black pieces
     pieceClasses.forEach((PieceClass, index) => {
       const file = String.fromCharCode(97 + index); // a-h
-      this.pieces.set(`${file}8`, PieceFactory.createPiece(PieceClass, 'black', `${file}8`, this));
+      const square = new Square(`${file}8`);
+      this.pieces.set(square, PieceFactory.createPiece(PieceClass, 'black', square, this));
     });
   }
 
   /**
    * Gets the piece at the specified square
    */
-  getPiece(square: SquareNotation): Piece | undefined {
+  getPiece(square: Square): Piece | undefined {
     return this.pieces.get(square);
   }
 
@@ -73,19 +75,19 @@ export class Board {
   /**
    * Checks if a square is occupied
    */
-  isOccupied(square: SquareNotation): boolean {
+  isOccupied(square: Square): boolean {
     return this.pieces.has(square);
   }
 
   /**
    * Checks if a square is occupied by a piece of the specified color
    */
-  isOccupiedBy(square: SquareNotation, color: Color): boolean {
+  isOccupiedBy(square: Square, color: Color): boolean {
     const piece = this.getPiece(square);
     return piece ? piece.color === color : false;
   }
 
-  isOccupiedByOpponent(square: SquareNotation, color: Color): boolean {
+  isOccupiedByOpponent(square: Square, color: Color): boolean {
     const piece = this.getPiece(square);
     return piece ? piece.color !== color : false;
   }
@@ -121,7 +123,7 @@ export class Board {
     return this.filterLegalMoves(piece,reachableSquares);
   }
 
-  private filterLegalMoves(piece: Piece, reachableSquares: SquareNotation[]): Move[] {
+  private filterLegalMoves(piece: Piece, reachableSquares: Square[]): Move[] {
     const legalMoves: Move[] = [];
 
     for (const reachableSquare of reachableSquares) {
@@ -145,7 +147,9 @@ export class Board {
     const opponentColor: Color = color === 'white' ? 'black' : 'white';
     const opponentPieces = this.getPiecesByColor(opponentColor);
 
-    return opponentPieces.some(piece => piece.getReachableSquares().includes(king.square));
+    return opponentPieces.some(piece => 
+      piece.getReachableSquares().some(square => square.equals(king.square))
+    );
   }
 
   /**
@@ -162,41 +166,10 @@ export class Board {
   }
 
   /**
-   * Gets all captured pieces
-   */
-  getCapturedPieces(): Piece[] {
-    return [...this.capturedPieces];
-  }
-
-  /**
-   * Gets captured pieces by color
-   */
-  getCapturedPiecesByColor(color: Color): Piece[] {
-    return this.capturedPieces.filter(piece => piece.color === color);
-  }
-
-  /**
    * Finds the king of the specified color
    */
   findKing(color: Color): Piece | undefined {
     return this.getPiecesByClass(King, color)[0];
-  }
-
-  /**
-   * Gets all squares occupied by pieces of the specified color
-   */
-  getOccupiedSquares(color: Color): SquareNotation[] {
-    return Array.from(this.pieces.entries())
-      .filter(([_, piece]) => piece.color === color)
-      .map(([square, _]) => square);
-  }
-
-  /**
-   * Gets all empty squares
-   */
-  getEmptySquares(): SquareNotation[] {
-    const allSquares = SquareUtil.getAllSquares();
-    return allSquares.filter(square => !this.isOccupied(square));
   }
 
   /**
@@ -207,8 +180,8 @@ export class Board {
     
     for (let rank = 8; rank >= 1; rank--) {
       boardString += `${rank} `;
-      for (let file = 0; file < 8; file++) {
-        const square = SquareUtil.fromCoordinates({ file: file + 1, rank: rank });
+      for (let file = 1; file <= 8; file++) {
+        const square = new Square({ file, rank });
         const piece = this.getPiece(square);
         boardString += piece ? piece.symbol : '·';
         boardString += ' ';

@@ -80,6 +80,13 @@ export class Square {
   }
 
   /**
+   * Checks if this square is equal to another (same position)
+   */
+  equals(other: Square): boolean {
+    return this.file === other.file && this.rank === other.rank;
+  }
+
+  /**
    * Validates if a square notation is valid (e.g., "e5", "a1")
    */
   static isValid(square: SquareNotation): boolean;
