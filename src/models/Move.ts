@@ -1,13 +1,13 @@
-import { SquareNotation, SquareDistance, Color } from '../types/chess';
+import { SquareDistance, Color } from '../types/chess';
 import { Piece } from './Piece';
 import { King } from './pieces/King';
 import { Pawn } from './pieces/Pawn';
-import { Square as SquareUtil } from '../utils/Square';
+import { Square } from '../utils/Square';
 import { Board } from './Board';
 
 export class Move {
-  public readonly from: SquareNotation;
-  public readonly to: SquareNotation;
+  public readonly from: Square;
+  public readonly to: Square;
   public readonly piece: Piece;
   public readonly moveNumber: number;
   public readonly notation: string;
@@ -21,8 +21,8 @@ export class Move {
   public readonly board: Board;
 
   constructor(
-    from: SquareNotation,
-    to: SquareNotation,
+    from: Square,
+    to: Square,
     board: Board,
     moveNumber: number = 0,
     options: {
@@ -35,10 +35,7 @@ export class Move {
       validationErrors?: string[];
     } = {}
   ) {
-    if (!SquareUtil.isValid(from) || !SquareUtil.isValid(to)) {
-      throw new Error('Invalid square notation');
-    }
-
+    // Square objects are already validated during construction
     this.from = from;
     this.to = to;
     this.board = board;
@@ -157,14 +154,14 @@ export class Move {
 
     // Handle special cases
     if (this.piece instanceof King && this.isCastling()) {
-      const isKingside = this.to[0] === 'g';
+      const isKingside = this.to.file === 7; // 'g' is file 7
       return isKingside ? 'O-O' : 'O-O-O';
     }
 
     // Handle pawn promotion (simplified)
-    if (this.piece instanceof Pawn && this.isPawnPromotion()) {
-      return `${this.to}${checkSymbol}${checkmateSymbol}`;
-    }
+    // if (this.piece instanceof Pawn && this.isPawnPromotion()) {
+    //   return `${this.to}${checkSymbol}${checkmateSymbol}`;
+    // }
 
     // Standard notation
     return `${pieceSymbol}${captureSymbol}${this.to}${checkSymbol}${checkmateSymbol}`;
@@ -183,19 +180,19 @@ export class Move {
   /**
    * Checks if this move is a pawn promotion
    */
-  private isPawnPromotion(): boolean {
-    if (!(this.piece instanceof Pawn)) return false;
+  // private isPawnPromotion(): boolean {
+  //   if (!(this.piece instanceof Pawn)) return false;
     
-    const targetRank = parseInt(this.to[1]);
-    return (this.piece.isWhite() && targetRank === 8) ||
-           (this.piece.isBlack() && targetRank === 1);
-  }
+  //   const targetRank = parseInt(this.to[1]);
+  //   return (this.piece.isWhite() && targetRank === 8) ||
+  //          (this.piece.isBlack() && targetRank === 1);
+  // }
 
   /**
    * Gets the distance of this move
    */
   getDistance(): SquareDistance {
-    return SquareUtil.getDistance(this.from, this.to);
+    return this.from.distanceTo(this.to);
   }
 
   /**
