@@ -1,4 +1,4 @@
-import { Color, SquareNotation, SquareCoordinates } from '../types/chess';
+import { Color } from '../types/chess';
 import { Square } from '../utils/Square';
 import { Board } from './Board';
 
@@ -10,13 +10,13 @@ export interface MoveDirection {
 
 export abstract class Piece {
   public readonly _color: Color;
-  private _square!: SquareNotation;
+  private _square: Square;
   protected board: Board;
 
-  constructor(color: Color, square: SquareNotation, board: Board) {
+  constructor(color: Color, square: Square, board: Board) {
     this._color = color;
     this.board = board;
-    this.square = square;
+    this._square = square;
   }
 
   /**
@@ -30,7 +30,7 @@ export abstract class Piece {
   abstract get notation(): string;
 
   get color(): Color {
-    return this.color;
+    return this._color;
   }
 
   isWhite(): boolean {
@@ -41,14 +41,11 @@ export abstract class Piece {
     return this._color === 'black';
   }
 
-  get square(): SquareNotation {
+  get square(): Square {
     return this._square;
   }
 
-  set square(newSquare: SquareNotation) {
-    if (!Square.isValid(newSquare)) {
-      throw new Error(`Invalid square: ${newSquare}`);
-    }
+  set square(newSquare: Square) {
     this._square = newSquare;
   }
 
@@ -66,31 +63,31 @@ export abstract class Piece {
    * A square is reachable if it is inside the board and not occupied or blocked by a piece with the same color
    * @returns Array of squares the piece can reach
    */
-  getReachableSquares(): SquareNotation[] {
-    const reachableSquares: SquareNotation[] = [];
-    const currentCoords = Square.toCoordinates(this.square);
+  getReachableSquares(): Square[] {
+    const reachableSquares: Square[] = [];
     const directions = this.getDirections();
 
     for (const direction of directions) {
-      const candidateSquareCoordinates: SquareCoordinates = { file: currentCoords.file + direction.file, rank: currentCoords.rank + direction.rank };
-      const candidateSquare = Square.fromCoordinates(candidateSquareCoordinates);
-
+      let currentSquare = this._square;
       let steps = 1;
-      while (steps <= direction.maxSteps &&
-             Square.isValid(candidateSquare)) {
+
+      while (steps <= direction.maxSteps) {
+        const nextSquare = currentSquare.offset(direction.file, direction.rank);
+        if (!nextSquare) break; // Out of bounds
 
         // Stop if occupied by own piece
-        if (this.board.isOccupiedBy(candidateSquare, this.color)) {
+        if (this.board.isOccupiedBy(nextSquare, this._color)) {
           break;
         }
-
-        reachableSquares.push(candidateSquare);
 
         // Can capture opponent piece but stop afterwards
-        if (this.board.isOccupiedByOpponent(candidateSquare, this.color)) {
+        if (this.board.isOccupiedByOpponent(nextSquare, this._color)) {
+          reachableSquares.push(nextSquare);
           break;
         }
 
+        reachableSquares.push(nextSquare);
+        currentSquare = nextSquare;
         steps++;
       }
     }
@@ -98,12 +95,11 @@ export abstract class Piece {
     return reachableSquares;
   }
 
-
   /**
    * Example: "white pawn at e2"
    */
   toString(): string {
-    return `${this.color} ${this.name} at ${this.square}`;
+    return `${this.color} ${this.name} at ${this.square.notation}`;
   }
 }
 
