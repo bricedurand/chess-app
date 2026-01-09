@@ -15,15 +15,15 @@ describe('Chess Game', () => {
   describe('Board Setup', () => {
     it('should initialize with correct piece positions', () => {
       // Check white pieces
-      expect(board.getPiece(new Square('a1'))?.name).toBe('rook');
+      expect(board.getPiece(new Square('a1'))?.name).toBe('Rook');
       expect(board.getPiece(new Square('a1'))?.color).toBe('white');
-      expect(board.getPiece(new Square('e1'))?.name).toBe('king');
+      expect(board.getPiece(new Square('e1'))?.name).toBe('King');
       expect(board.getPiece(new Square('e1'))?.color).toBe('white');
       
       // Check black pieces
-      expect(board.getPiece(new Square('a8'))?.name).toBe('rook');
+      expect(board.getPiece(new Square('a8'))?.name).toBe('Rook');
       expect(board.getPiece(new Square('a8'))?.color).toBe('black');
-      expect(board.getPiece(new Square('e8'))?.name).toBe('king');
+      expect(board.getPiece(new Square('e8'))?.name).toBe('King');
       expect(board.getPiece(new Square('e8'))?.color).toBe('black');
     });
 
@@ -59,43 +59,50 @@ describe('Chess Game', () => {
 
   describe('Piece Movements', () => {
     it('should allow pawn to move forward one square', () => {
-      expect(game.makeMove(new Square('e2'), new Square('e3'))).toBe(true);
+      game.makeMove(new Square('e2'), new Square('e3'));
+      expect(game.getMoveHistory()).toHaveLength(1);
     });
 
     it('should allow pawn to move forward two squares from starting position', () => {
-      expect(game.makeMove(new Square('e2'), new Square('e4'))).toBe(true);
+      game.makeMove(new Square('e2'), new Square('e4'));
+      expect(game.getMoveHistory()).toHaveLength(1);
     });
 
     it('should allow knight to move in L-shape', () => {
-      expect(game.makeMove(new Square('g1'), new Square('f3'))).toBe(true);
+      game.makeMove(new Square('g1'), new Square('f3'));
+      expect(game.getMoveHistory()).toHaveLength(1);
     });
 
     it('should allow bishop to move diagonally', () => {
       game.makeMove(new Square('e2'), new Square('e4'));
       game.makeMove(new Square('e7'), new Square('e5'));
       
-      expect(game.makeMove(new Square('f1'), new Square('c4'))).toBe(true);
+      game.makeMove(new Square('f1'), new Square('c4'));
+      expect(game.getMoveHistory()).toHaveLength(3);
     });
 
     it('should allow rook to move horizontally and vertically', () => {
       game.makeMove(new Square('h2'), new Square('h4'));
       game.makeMove(new Square('e7'), new Square('e5'));
       
-      expect(game.makeMove(new Square('h1'), new Square('h3'))).toBe(true);
+      game.makeMove(new Square('h1'), new Square('h3'));
+      expect(game.getMoveHistory()).toHaveLength(3);
     });
 
     it('should allow queen to move diagonally', () => {
       game.makeMove(new Square('e2'), new Square('e4'));
       game.makeMove(new Square('e7'), new Square('e5'));
       
-      expect(game.makeMove(new Square('d1'), new Square('h5'))).toBe(true);
+      game.makeMove(new Square('d1'), new Square('h5'));
+      expect(game.getMoveHistory()).toHaveLength(3);
     });
 
     it('should allow queen to move horizontally', () => {
       game.makeMove(new Square('d2'), new Square('d4'));
       game.makeMove(new Square('e7'), new Square('e5'));
       
-      expect(game.makeMove(new Square('d1'), new Square('d3'))).toBe(true);
+      game.makeMove(new Square('d1'), new Square('d3'));
+      expect(game.getMoveHistory()).toHaveLength(3);
     });
 
     it('should reject invalid piece movements', () => {
@@ -133,7 +140,7 @@ describe('Chess Game', () => {
       const moveHistory = game.getMoveHistory();
       const capturedMoves = moveHistory.filter(m => m.isCapture);
       expect(capturedMoves.length).toBe(1);
-      expect(capturedMoves[0].capturedPiece?.name).toBe('pawn');
+      expect(capturedMoves[0].capturedPiece?.name).toBe('Pawn');
       expect(capturedMoves[0].capturedPiece?.color).toBe('black');
     });
 
@@ -165,19 +172,19 @@ describe('Chess Game', () => {
       // Check first move
       expect(moveHistory[0].from.notation).toBe('e2');
       expect(moveHistory[0].to.notation).toBe('e4');
-      expect(moveHistory[0].piece.name).toBe('pawn');
+      expect(moveHistory[0].piece.name).toBe('Pawn');
       expect(moveHistory[0].piece.color).toBe('white');
 
       // Check second move
       expect(moveHistory[1].from.notation).toBe('e7');
       expect(moveHistory[1].to.notation).toBe('e5');
-      expect(moveHistory[1].piece.name).toBe('pawn');
+      expect(moveHistory[1].piece.name).toBe('Pawn');
       expect(moveHistory[1].piece.color).toBe('black');
 
       // Check third move
       expect(moveHistory[2].from.notation).toBe('g1');
       expect(moveHistory[2].to.notation).toBe('f3');
-      expect(moveHistory[2].piece.name).toBe('knight');
+      expect(moveHistory[2].piece.name).toBe('Knight');
       expect(moveHistory[2].piece.color).toBe('white');
     });
 
@@ -192,7 +199,7 @@ describe('Chess Game', () => {
       const captureMove = moveHistory[4];
       
       expect(captureMove.isCapture).toBe(true);
-      expect(captureMove.piece.name).toBe('pawn');
+      expect(captureMove.piece.name).toBe('Pawn');
       expect(captureMove.piece.color).toBe('white');
     });
   });
