@@ -40,7 +40,7 @@ export class Square {
     const newFile = this.file + fileOffset;
     const newRank = this.rank + rankOffset;
 
-    if (newFile < 1 || newFile > 8 || newRank < 1 || newRank > 8) {
+    if (!Square.isValid({ file: newFile, rank: newRank })) {
       return null;
     }
 
