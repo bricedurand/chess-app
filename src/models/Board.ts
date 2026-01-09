@@ -10,7 +10,7 @@ import { Square } from '../utils/Square';
 import { Move } from './Move';
 
 export class Board {
-  private pieces: Map<Square, Piece> = new Map();
+  private pieces: Map<string, Piece> = new Map();
   private capturedPieces: Piece[] = [];
 
   constructor() {
@@ -27,8 +27,10 @@ export class Board {
 
     // Place pawns
     for (let file of ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']) {
-      this.pieces.set(new Square(`${file}2`), PieceFactory.createPawn('white', new Square(`${file}2`), this));
-      this.pieces.set(new Square(`${file}7`), PieceFactory.createPawn('black', new Square(`${file}7`), this));
+      const sqWhite = new Square(`${file}2`);
+      const sqBlack = new Square(`${file}7`);
+      this.pieces.set(sqWhite.notation, PieceFactory.createPawn('white', sqWhite, this));
+      this.pieces.set(sqBlack.notation, PieceFactory.createPawn('black', sqBlack, this));
     }
 
     // Place other pieces - using class constructors directly
@@ -38,14 +40,14 @@ export class Board {
     pieceClasses.forEach((PieceClass, index) => {
       const file = String.fromCharCode(97 + index); // a-h
       const square = new Square(`${file}1`);
-      this.pieces.set(square, PieceFactory.createPiece(PieceClass, 'white', square, this));
+      this.pieces.set(square.notation, PieceFactory.createPiece(PieceClass, 'white', square, this));
     });
 
     // Black pieces
     pieceClasses.forEach((PieceClass, index) => {
       const file = String.fromCharCode(97 + index); // a-h
       const square = new Square(`${file}8`);
-      this.pieces.set(square, PieceFactory.createPiece(PieceClass, 'black', square, this));
+      this.pieces.set(square.notation, PieceFactory.createPiece(PieceClass, 'black', square, this));
     });
   }
 
@@ -53,7 +55,7 @@ export class Board {
    * Gets the piece at the specified square
    */
   getPiece(square: Square): Piece | undefined {
-    return this.pieces.get(square);
+    return this.pieces.get(square.notation);
   }
 
   /**
@@ -76,7 +78,7 @@ export class Board {
    * Checks if a square is occupied
    */
   isOccupied(square: Square): boolean {
-    return this.pieces.has(square);
+    return this.pieces.has(square.notation);
   }
 
   /**
@@ -95,25 +97,25 @@ export class Board {
   executeMove(move: Move): void {
     // remove captured piece if any
     if(move.isCapture) {
-      this.pieces.delete(move.to);
+      this.pieces.delete(move.to.notation);
       this.capturedPieces.push(move.capturedPiece!);
     }
 
     // move piece to new square
-    this.pieces.delete(move.piece.square);
-    this.pieces.set(move.to, move.piece);
+    this.pieces.delete(move.piece.square.notation);
+    this.pieces.set(move.to.notation, move.piece);
     move.piece.square = move.to;
   }
 
   undoMove(move: Move): void {
     // move piece to old square
-    this.pieces.delete(move.to);
-    this.pieces.set(move.from, move.piece);
+    this.pieces.delete(move.to.notation);
+    this.pieces.set(move.from.notation, move.piece);
     move.piece.square = move.from;
 
     // restore captured piece if any
     if(move.isCapture) {
-      this.pieces.set(move.to, move.capturedPiece!);
+      this.pieces.set(move.to.notation, move.capturedPiece!);
       this.capturedPieces.pop();
     }
   }
