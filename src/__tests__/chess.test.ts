@@ -130,10 +130,11 @@ describe('Chess Game', () => {
       // Capture black pawn (it's white's turn)
       game.makeMove(new Square('d4'), new Square('d5'));
       
-      const gameState = game.getGameState();
-      expect(gameState.capturedPieces.length).toBe(1);
-      expect(gameState.capturedPieces[0].name).toBe('pawn');
-      expect(gameState.capturedPieces[0].color).toBe('black');
+      const moveHistory = game.getMoveHistory();
+      const capturedMoves = moveHistory.filter(m => m.isCapture);
+      expect(capturedMoves.length).toBe(1);
+      expect(capturedMoves[0].capturedPiece?.name).toBe('pawn');
+      expect(capturedMoves[0].capturedPiece?.color).toBe('black');
     });
 
     it('should not track captured pieces when no capture occurs', () => {
@@ -141,8 +142,9 @@ describe('Chess Game', () => {
       game.makeMove(new Square('e7'), new Square('e5'));
       game.makeMove(new Square('g1'), new Square('f3'));
 
-      const gameState = game.getGameState();
-      expect(gameState.capturedPieces.length).toBe(0);
+      const moveHistory = game.getMoveHistory();
+      const capturedMoves = moveHistory.filter(m => m.isCapture);
+      expect(capturedMoves.length).toBe(0);
     });
   });
 
@@ -200,12 +202,12 @@ describe('Chess Game', () => {
       const initialState = game.getGameState();
       expect(initialState.currentPlayer).toBe('white');
       expect(initialState.isGameOver).toBe(false);
-      expect(initialState.moveHistory).toHaveLength(0);
+      expect(game.getMoveHistory()).toHaveLength(0);
 
       game.makeMove(new Square('e2'), new Square('e4'));
       const afterFirstMove = game.getGameState();
       expect(afterFirstMove.currentPlayer).toBe('black');
-      expect(afterFirstMove.moveHistory).toHaveLength(1);
+      expect(game.getMoveHistory()).toHaveLength(1);
     });
 
     it('should not be game over initially', () => {
