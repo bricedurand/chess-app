@@ -59,7 +59,7 @@ export class Game {
   /**
    * Attempts to make a move
    */
-  makeMove(from: Square, to: Square): boolean {
+  makeMove(from: Square, to: Square): void {
     if (this.isGameOver) {
       throw new Error('Game is over');
     }
@@ -80,17 +80,17 @@ export class Game {
 
     const move = new Move(from, to, this.board);
     this.board.executeMove(move);
+
+    const opponentColor = this.getOpponentColor();
+    const state = this.evaluateGameState(opponentColor);
     
     const moveNumber = Math.floor(this.moveHistory.length / 2) + 1;
-    const opponentColor = this.getOpponentColor();
-    const isCheck = this.board.isKingInCheck(opponentColor);
-    const isCheckmate = isCheck && !this.hasLegalMoves(opponentColor);
-    const historicalMove = move.toHistoricalMove(moveNumber, isCheck, isCheckmate);
+    const historicalMove = move.toHistoricalMove(moveNumber, state.isCheck, state.isCheckmate);
     this.moveHistory.push(historicalMove);
 
-    this.checkGameOver();
-    this.switchPlayers();
-    return true;
+    if (!this.isGameOver) {
+      this.switchPlayers();
+    }
   }
 
 
@@ -109,28 +109,27 @@ export class Game {
     return false; // No legal moves found
   }
 
-  private isCheckmate(color: Color): boolean {
-    return this.board.isKingInCheck(color) && !this.hasLegalMoves(color);
-  }
+  private evaluateGameState(color: Color): { isCheck: boolean; isCheckmate: boolean; isStalemate: boolean } {
+    const isCheck = this.board.isKingInCheck(color);
+    const hasLegalMoves = this.hasLegalMoves(color);
+    const isCheckmate = isCheck && !hasLegalMoves;
+    const isStalemate = !isCheck && !hasLegalMoves;
 
-  private isStalemate(color: Color): boolean {
-    return !this.board.isKingInCheck(color) && !this.hasLegalMoves(color);
-  }
-
-  /**
-   * Checks for game over conditions
-   */
-  private checkGameOver(): void {
-    const opponentColor = this.getOpponentColor();
-
-    if (this.isCheckmate(opponentColor)) {
+    if (isCheckmate) {
       this.isGameOver = true;
       this.winner = this.currentPlayer;
       this.gameResult = 'checkmate';
-    } else if (this.isStalemate(opponentColor)) {
+    } else if (isStalemate) {
       this.isGameOver = true;
+      this.winner = undefined;
       this.gameResult = 'stalemate';
+    } else {
+      this.isGameOver = false;
+      this.winner = undefined;
+      this.gameResult = undefined;
     }
+
+    return { isCheck, isCheckmate, isStalemate };
   }
 
   private getOpponentColor(): Color {
