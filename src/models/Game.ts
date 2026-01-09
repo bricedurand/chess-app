@@ -5,10 +5,11 @@ import { Square } from '../utils/Square';
 
 export interface GameState {
   currentPlayer: Color;
-  moveHistory: Move[];
   isGameOver: boolean;
   winner?: Color;
-  gameResult?: 'checkmate' | 'stalemate';
+  isCheckmate: boolean;
+  isStalemate: boolean;
+  isCheck: boolean;
 }
 
 export class Game {
@@ -17,7 +18,8 @@ export class Game {
   private moveHistory: Move[] = [];
   private isGameOver: boolean = false;
   private winner?: Color;
-  private gameResult?: 'checkmate' | 'stalemate';
+  private isCheckmate: boolean = false;
+  private isStalemate: boolean = false;
 
   constructor() {
     this.board = new Board();
@@ -26,10 +28,11 @@ export class Game {
   getGameState(): GameState {
     return {
       currentPlayer: this.currentPlayer,
-      moveHistory: [...this.moveHistory],
       isGameOver: this.isGameOver,
       winner: this.winner,
-      gameResult: this.gameResult
+      isCheckmate: this.isCheckmate,
+      isStalemate: this.isStalemate,
+      isCheck: this.board.isKingInCheck(this.currentPlayer)
     };
   }
 
@@ -109,27 +112,27 @@ export class Game {
     return false; // No legal moves found
   }
 
-  private evaluateGameState(color: Color): { isCheck: boolean; isCheckmate: boolean; isStalemate: boolean } {
+  private evaluateGameState(color: Color): GameState {
     const isCheck = this.board.isKingInCheck(color);
     const hasLegalMoves = this.hasLegalMoves(color);
-    const isCheckmate = isCheck && !hasLegalMoves;
-    const isStalemate = !isCheck && !hasLegalMoves;
+    this.isCheckmate = isCheck && !hasLegalMoves;
+    this.isStalemate = !isCheck && !hasLegalMoves;
 
-    if (isCheckmate) {
-      this.isGameOver = true;
+    this.isGameOver = this.isCheckmate || this.isStalemate;
+    if (this.isCheckmate) {
       this.winner = this.currentPlayer;
-      this.gameResult = 'checkmate';
-    } else if (isStalemate) {
-      this.isGameOver = true;
-      this.winner = undefined;
-      this.gameResult = 'stalemate';
     } else {
-      this.isGameOver = false;
       this.winner = undefined;
-      this.gameResult = undefined;
     }
 
-    return { isCheck, isCheckmate, isStalemate };
+    return {
+      currentPlayer: color,
+      isGameOver: this.isGameOver,
+      winner: this.winner,
+      isCheckmate: this.isCheckmate,
+      isStalemate: this.isStalemate,
+      isCheck
+    };
   }
 
   private getOpponentColor(): Color {
@@ -152,7 +155,8 @@ export class Game {
     // Reset game over state
     this.isGameOver = false;
     this.winner = undefined;
-    this.gameResult = undefined;
+    this.isCheckmate = false;
+    this.isStalemate = false;
 
     return true;
   }
@@ -166,7 +170,8 @@ export class Game {
     this.moveHistory = [];
     this.isGameOver = false;
     this.winner = undefined;
-    this.gameResult = undefined;
+    this.isCheckmate = false;
+    this.isStalemate = false;
   }
 
   /**
