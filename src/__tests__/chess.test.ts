@@ -58,84 +58,92 @@ describe('Chess Game', () => {
   });
 
   describe('Piece Movements', () => {
-    it('should allow pawn to move forward one square', () => {
-      game.makeMove(new Square('e2'), new Square('e3'));
-      expect(game.getMoveHistory()).toHaveLength(1);
+    describe('Legal Moves', () => {
+      it('should allow pawn to move forward one square', () => {
+        game.makeMove(new Square('e2'), new Square('e3'));
+        expect(game.getMoveHistory()).toHaveLength(1);
+      });
+
+      it('should allow pawn to move forward two squares from starting position', () => {
+        game.makeMove(new Square('e2'), new Square('e4'));
+        expect(game.getMoveHistory()).toHaveLength(1);
+      });
+
+      it('should allow knight to move in L-shape', () => {
+        game.makeMove(new Square('g1'), new Square('f3'));
+        expect(game.getMoveHistory()).toHaveLength(1);
+      });
+
+      it('should allow bishop to move diagonally', () => {
+        game.makeMove(new Square('e2'), new Square('e4'));
+        game.makeMove(new Square('e7'), new Square('e5'));
+        
+        game.makeMove(new Square('f1'), new Square('c4'));
+        expect(game.getMoveHistory()).toHaveLength(3);
+      });
+
+      it('should allow rook to move horizontally and vertically', () => {
+        game.makeMove(new Square('h2'), new Square('h4'));
+        game.makeMove(new Square('e7'), new Square('e5'));
+        
+        game.makeMove(new Square('h1'), new Square('h3'));
+        expect(game.getMoveHistory()).toHaveLength(3);
+      });
+
+      it('should allow queen to move diagonally', () => {
+        game.makeMove(new Square('e2'), new Square('e4'));
+        game.makeMove(new Square('e7'), new Square('e5'));
+        
+        game.makeMove(new Square('d1'), new Square('h5'));
+        expect(game.getMoveHistory()).toHaveLength(3);
+      });
+
+      it('should allow queen to move horizontally', () => {
+        game.makeMove(new Square('d2'), new Square('d4'));
+        game.makeMove(new Square('e7'), new Square('e5'));
+        
+        game.makeMove(new Square('d1'), new Square('d3'));
+        expect(game.getMoveHistory()).toHaveLength(3);
+      });
     });
 
-    it('should allow pawn to move forward two squares from starting position', () => {
-      game.makeMove(new Square('e2'), new Square('e4'));
-      expect(game.getMoveHistory()).toHaveLength(1);
-    });
+    describe('Illegal Moves', () => {
+      it('should reject invalid piece movements', () => {
+        expect(() => {
+          game.makeMove(new Square('e2'), new Square('e6')); // Pawn can't move 4 squares
+        }).toThrow('Invalid move');
+      });
 
-    it('should allow knight to move in L-shape', () => {
-      game.makeMove(new Square('g1'), new Square('f3'));
-      expect(game.getMoveHistory()).toHaveLength(1);
-    });
+      it('should reject moves from empty squares', () => {
+        expect(() => {
+          game.makeMove(new Square('e3'), new Square('e4'));
+        }).toThrow('No piece at e3');
+      });
 
-    it('should allow bishop to move diagonally', () => {
-      game.makeMove(new Square('e2'), new Square('e4'));
-      game.makeMove(new Square('e7'), new Square('e5'));
-      
-      game.makeMove(new Square('f1'), new Square('c4'));
-      expect(game.getMoveHistory()).toHaveLength(3);
-    });
+      it('should reject moves to invalid squares', () => {
+        expect(() => {
+          game.makeMove(new Square('e2'), new Square('e9'));
+        }).toThrow('Invalid square notation');
+      });
 
-    it('should allow rook to move horizontally and vertically', () => {
-      game.makeMove(new Square('h2'), new Square('h4'));
-      game.makeMove(new Square('e7'), new Square('e5'));
-      
-      game.makeMove(new Square('h1'), new Square('h3'));
-      expect(game.getMoveHistory()).toHaveLength(3);
-    });
-
-    it('should allow queen to move diagonally', () => {
-      game.makeMove(new Square('e2'), new Square('e4'));
-      game.makeMove(new Square('e7'), new Square('e5'));
-      
-      game.makeMove(new Square('d1'), new Square('h5'));
-      expect(game.getMoveHistory()).toHaveLength(3);
-    });
-
-    it('should allow queen to move horizontally', () => {
-      game.makeMove(new Square('d2'), new Square('d4'));
-      game.makeMove(new Square('e7'), new Square('e5'));
-      
-      game.makeMove(new Square('d1'), new Square('d3'));
-      expect(game.getMoveHistory()).toHaveLength(3);
-    });
-
-    it('should reject invalid piece movements', () => {
-      expect(() => {
-        game.makeMove(new Square('e2'), new Square('e6')); // Pawn can't move 4 squares
-      }).toThrow('Invalid move');
-    });
-
-    it('should reject moves from empty squares', () => {
-      expect(() => {
-        game.makeMove(new Square('e3'), new Square('e4'));
-      }).toThrow('No piece at e3');
-    });
-
-    it('should reject moves to invalid squares', () => {
-      expect(() => {
-        game.makeMove(new Square('e2'), new Square('e9'));
-      }).toThrow('Invalid square notation');
+      it('should not allow pawn to capture diagonally without opponent piece', () => {
+        game.makeMove(new Square('e2'), new Square('e4'));
+        game.makeMove(new Square('a7'), new Square('a6'));
+        
+        expect(() => {
+          game.makeMove(new Square('e4'), new Square('d5'));
+        }).toThrow('Invalid move');
+      });
     });
   });
 
   describe('Captured Pieces', () => {
     it('should track captured pieces when capture occurs', () => {
-      // Move white pawn
       game.makeMove(new Square('e2'), new Square('e4'));
-      game.makeMove(new Square('e7'), new Square('e5'));
-      
-      // Move white pawn to d4 to prepare for capture
-      game.makeMove(new Square('d2'), new Square('d4'));
       game.makeMove(new Square('d7'), new Square('d5'));
       
       // Capture black pawn (it's white's turn)
-      game.makeMove(new Square('d4'), new Square('e5'));
+      game.makeMove(new Square('e4'), new Square('d5'));
       
       const moveHistory = game.getMoveHistory();
       const capturedMoves = moveHistory.filter(m => m.isCapture);
