@@ -65,6 +65,19 @@ chess-app/
     └── ...
 ```
 
+## Class Diagram
+
+![Class Diagram](class-diagram.svg)
+
+The diagram source is maintained in [class-diagram.mmd](class-diagram.mmd).
+
+To regenerate the SVG, PDF, or PNG from the Mermaid source, run:
+```bash
+mmdc -i class-diagram.mmd -o class-diagram.svg
+mmdc -i class-diagram.mmd -o class-diagram.pdf
+mmdc -i class-diagram.mmd -o class-diagram.png
+```
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

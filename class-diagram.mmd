@@ -1,0 +1,103 @@
+classDiagram
+    class Game {
+        -board: Board
+        -currentPlayer: Color
+        -moveHistory: Move[]
+        -isGameOver: boolean
+        -winner?: Color
+        +getGameState(): GameState
+        +getBoard(): Board
+        +makeMove(from: Square, to: Square): void
+        +undoMove(): boolean
+        +reset(): void
+    }
+
+    class Board {
+        -pieces: Map~string, Piece~
+        -capturedPieces: Piece[]
+        +getPiece(square: Square): Piece?
+        +getPiecesByColor(color: Color): Piece[]
+        +isOccupied(square: Square): boolean
+        +executeMove(move: Move): void
+        +getLegalMoves(piece: Piece): Move[]
+        +isKingInCheck(color: Color): boolean
+    }
+
+    class Piece {
+        <<abstract>>
+        #_color: Color
+        #_square: Square
+        #board: Board
+        +symbol*: string
+        +notation*: string
+        +color: Color
+        +square: Square
+        +getDirections()*: MoveDirection[]
+        +getReachableSquares(): Square[]
+    }
+
+    class Move {
+        +from: Square
+        +to: Square
+        +piece: Piece
+        +moveNumber: number
+        +notation: string
+        +isCapture: boolean
+        +isCheck: boolean
+        +isCheckmate: boolean
+        +capturedPiece?: Piece
+    }
+
+    class Square {
+        -_notation: SquareNotation
+        -_coordinates: SquareCoordinates
+        +notation: SquareNotation
+        +coordinates: SquareCoordinates
+        +offset(fileOffset: number, rankOffset: number): Square?
+        +equals(other: Square): boolean
+    }
+
+    class GameState {
+        <<interface>>
+        +currentPlayer: Color
+        +isGameOver: boolean
+        +winner?: Color
+        +isCheckmate: boolean
+        +isStalemate: boolean
+        +isCheck: boolean
+    }
+
+    class MoveDirection {
+        <<interface>>
+        +file: number
+        +rank: number
+        +maxSteps: number
+    }
+
+    %% Concrete piece classes
+    class Pawn
+    class Rook
+    class Knight
+    class Bishop
+    class Queen
+    class King
+
+    %% Relationships
+    Game --> Board : has-a
+    Game --> Move : has-many
+    Game --> GameState : returns
+    Board --> Piece : has-many
+    Piece --> Square : has-a
+    Piece --> Board : has-a
+    Piece --> MoveDirection : returns
+    Move --> Square : has-a (from/to)
+    Move --> Piece : has-a
+    Move --> Board : has-a
+
+    %% Inheritance
+    Pawn --|> Piece
+    Rook --|> Piece
+    Knight --|> Piece
+    Bishop --|> Piece
+    Queen --|> Piece
+    King --|> Piece
