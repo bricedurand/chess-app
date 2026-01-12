@@ -9,11 +9,11 @@ export class Move {
   public readonly from: Square;
   public readonly to: Square;
   public readonly piece: Piece;
-  public readonly moveNumber: number;
-  public readonly notation: string;
+  public moveNumber: number;
+  public notation: string;
   public readonly isCapture: boolean;
-  public readonly isCheck: boolean;
-  public readonly isCheckmate: boolean;
+  public isCheck: boolean;
+  public isCheckmate: boolean;
   public readonly timestamp: Date;
   public readonly capturedPiece?: Piece;
   public readonly board: Board;
@@ -43,25 +43,6 @@ export class Move {
     this.capturedPiece = options.capturedPiece || board.getPiece(to);
     this.notation = options.notation || this.generateNotation();
     this.timestamp = new Date();
-  }
-
-  /**
-   * Creates a historical move from a candidate move
-   */
-  toHistoricalMove(moveNumber: number, isCheck: boolean, isCheckmate: boolean): Move {
-    return new Move(
-      this.from,
-      this.to,
-      this.board,
-      moveNumber,
-      {
-        isCapture: this.isCapture,
-        isCheck,
-        isCheckmate,
-        notation: this.generateNotation(),
-        capturedPiece: this.capturedPiece
-      }
-    );
   }
 
   /**

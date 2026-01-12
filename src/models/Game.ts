@@ -88,8 +88,10 @@ export class Game {
     const state = this.evaluateGameState(opponentColor);
     
     const moveNumber = Math.floor(this.moveHistory.length / 2) + 1;
-    const historicalMove = move.toHistoricalMove(moveNumber, state.isCheck, state.isCheckmate);
-    this.moveHistory.push(historicalMove);
+    move.moveNumber = moveNumber;
+    move.isCheck = state.isCheck;
+    move.isCheckmate = state.isCheckmate;
+    this.moveHistory.push(move);
 
     if (!this.isGameOver) {
       this.switchPlayers();
