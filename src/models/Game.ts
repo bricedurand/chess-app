@@ -69,7 +69,7 @@ export class Game {
 
     const piece = this.board.getPiece(from);
     if (!piece) {
-      throw new Error(`No piece at ${from}`);
+      throw new Error(`No piece at ${from.notation}`);
     }
     if (piece.color !== this.currentPlayer) {
       throw new Error(`It's ${this.currentPlayer}'s turn`);
@@ -78,7 +78,7 @@ export class Game {
     const legalMoves = this.board.getLegalMoves(piece);
     const isLegal = legalMoves.some(move => move.to.equals(to));
     if (!isLegal) {
-      throw new Error(`Invalid move: ${piece.name} cannot move from ${from} to ${to}`);
+      throw new Error(`Invalid move: ${piece.name} cannot move from ${from.notation} to ${to.notation}`);
     }
 
     const move = new Move(from, to, this.board);

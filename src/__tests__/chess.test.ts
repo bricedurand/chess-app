@@ -135,7 +135,7 @@ describe('Chess Game', () => {
       game.makeMove(new Square('d7'), new Square('d5'));
       
       // Capture black pawn (it's white's turn)
-      game.makeMove(new Square('d4'), new Square('d5'));
+      game.makeMove(new Square('d4'), new Square('e5'));
       
       const moveHistory = game.getMoveHistory();
       const capturedMoves = moveHistory.filter(m => m.isCapture);
@@ -190,13 +190,11 @@ describe('Chess Game', () => {
 
     it('should track capture moves correctly', () => {
       game.makeMove(new Square('e2'), new Square('e4'));
-      game.makeMove(new Square('e7'), new Square('e5'));
-      game.makeMove(new Square('d2'), new Square('d4'));
       game.makeMove(new Square('d7'), new Square('d5'));
-      game.makeMove(new Square('d4'), new Square('d5')); // Capture (white's turn)
+      game.makeMove(new Square('e4'), new Square('d5')); // Capture (white's turn)
 
       const moveHistory = game.getMoveHistory();
-      const captureMove = moveHistory[4];
+      const captureMove = moveHistory[2];
       
       expect(captureMove.isCapture).toBe(true);
       expect(captureMove.piece.name).toBe('Pawn');
