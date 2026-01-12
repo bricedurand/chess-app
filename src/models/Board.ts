@@ -121,15 +121,10 @@ export class Board {
   }
 
   getLegalMoves(piece: Piece): Move[] {
-    const reachableSquares = piece.getReachableSquares();
-    return this.filterLegalMoves(piece,reachableSquares);
-  }
-
-  private filterLegalMoves(piece: Piece, reachableSquares: Square[]): Move[] {
     const legalMoves: Move[] = [];
 
-    for (const reachableSquare of reachableSquares) {
-      const candidateMove = new Move(piece.square, reachableSquare, this, 0);
+    for (const reachableSquare of piece.getReachableSquares()) {
+      const candidateMove = new Move(piece.square, reachableSquare, this);
 
       if (!this.wouldPutKingInCheck(candidateMove)) {
         legalMoves.push(candidateMove);

@@ -75,13 +75,12 @@ export class Game {
       throw new Error(`It's ${this.currentPlayer}'s turn`);
     }
 
-    const legalMoves = this.board.getLegalMoves(piece);
-    const isLegal = legalMoves.some(move => move.to.equals(to));
-    if (!isLegal) {
+    const move = new Move(from, to, this.board);
+    const isLegalMove = this.board.getLegalMoves(piece).some((legalMove) => legalMove.equals(move));
+    if (!isLegalMove) {
       throw new Error(`Invalid move: ${piece.name} cannot move from ${from.notation} to ${to.notation}`);
     }
 
-    const move = new Move(from, to, this.board);
     this.board.executeMove(move);
 
     const opponentColor = this.getOpponentColor();

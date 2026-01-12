@@ -90,6 +90,10 @@ export class Move {
   //          (this.piece.isBlack() && targetRank === 1);
   // }
 
+  equals(other: Move): boolean {
+    return this.from.equals(other.from) && this.to.equals(other.to);
+  }
+
   /**
    * Gets the distance of this move
    */
