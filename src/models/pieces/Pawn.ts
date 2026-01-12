@@ -5,11 +5,7 @@ import { Square } from '../../utils/Square';
 export class Pawn extends Piece {
   getDirections(): MoveDirection[] {
     const rankDirection = this.isWhite() ? 1 : -1;
-    const defaultMaxSteps = 1;
-    const directions = [
-      { file: -1, rank: rankDirection, maxSteps: defaultMaxSteps }, // capture left
-      { file: 1, rank: rankDirection, maxSteps: defaultMaxSteps }   // capture right
-    ];
+    const directions = [];
 
     // Pawns cannot capture moving forward, so we need to check if there is an opponent piece ahead
     const squareAhead = this.square.offset(0, rankDirection);
@@ -25,6 +21,15 @@ export class Pawn extends Piece {
         }
       }
       directions.push(direction);
+    }
+
+    // Pawns can capture diagonally, but only if there is an opponent piece
+    const captureFileDirections = [-1, 1];
+    for (const fileDirection of captureFileDirections) {
+      const captureSquare = this.square.offset(fileDirection, rankDirection);
+      if (captureSquare && this.board.isOccupiedByOpponent(captureSquare, this.color)) {
+        directions.push({ file: fileDirection, rank: rankDirection, maxSteps: 1 });
+      }
     }
   
     return directions;
