@@ -11,7 +11,6 @@ export class Move {
   public readonly piece: Piece;
   public moveNumber: number;
   public notation: string;
-  public readonly isCapture: boolean;
   public isCheck: boolean;
   public isCheckmate: boolean;
   public readonly timestamp: Date;
@@ -24,11 +23,9 @@ export class Move {
     board: Board,
     moveNumber: number = 0,
     options: {
-      isCapture?: boolean;
       isCheck?: boolean;
       isCheckmate?: boolean;
       notation?: string;
-      capturedPiece?: Piece;
     } = {}
   ) {
     // Square objects are already validated during construction
@@ -37,10 +34,9 @@ export class Move {
     this.board = board;
     this.piece = board.getPiece(from)!;
     this.moveNumber = moveNumber;
-    this.isCapture = options.isCapture ?? !!board.getPiece(to);
     this.isCheck = options.isCheck ?? false;
     this.isCheckmate = options.isCheckmate ?? false;
-    this.capturedPiece = options.capturedPiece || board.getPiece(to);
+    this.capturedPiece = board.getPiece(to);
     this.notation = options.notation || this.generateNotation();
     this.timestamp = new Date();
   }
@@ -50,7 +46,7 @@ export class Move {
    */
   private generateNotation(): string {
     const pieceSymbol = this.piece.notation;
-    const captureSymbol = this.isCapture ? 'x' : '';
+    const captureSymbol = this.isCapture() ? 'x' : '';
     const checkSymbol = this.isCheck ? '+' : '';
     const checkmateSymbol = this.isCheckmate ? '#' : '';
 
@@ -67,6 +63,13 @@ export class Move {
 
     // Standard notation
     return `${pieceSymbol}${captureSymbol}${this.to}${checkSymbol}${checkmateSymbol}`;
+  }
+
+  /**
+   * Checks if this move is a capture
+   */
+  isCapture(): boolean {
+    return !!this.capturedPiece;
   }
 
   /**
@@ -102,33 +105,11 @@ export class Move {
   }
 
   /**
-   * Checks if this move is a capture
-   */
-  isCaptureMove(): boolean {
-    return this.isCapture;
-  }
-
-  /**
-   * Checks if this move puts the opponent in check
-   */
-  isCheckMove(): boolean {
-    return this.isCheck;
-  }
-
-  /**
-   * Checks if this move is checkmate
-   */
-  isCheckmateMove(): boolean {
-    return this.isCheckmate;
-  }
-
-  /**
    * Gets the algebraic notation for this move
    */
   getNotation(): string {
     return this.notation;
   }
-
 
   /**
    * Returns a string representation of the move
@@ -141,6 +122,6 @@ export class Move {
    * Returns a detailed string representation of the move
    */
   toDetailedString(): string {
-    return `${this.moveNumber}. ${this.piece.color} ${this.piece.name} from ${this.from} to ${this.to}${this.isCapture ? ' (capture)' : ''}${this.isCheck ? ' (check)' : ''}${this.isCheckmate ? ' (checkmate)' : ''}`;
+    return `${this.moveNumber}. ${this.piece.color} ${this.piece.name} from ${this.from} to ${this.to}${this.isCapture() ? ' (capture)' : ''}${this.isCheck ? ' (check)' : ''}${this.isCheckmate ? ' (checkmate)' : ''}`;
   }
 }

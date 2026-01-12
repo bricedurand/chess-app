@@ -146,7 +146,7 @@ describe('Chess Game', () => {
       game.makeMove(new Square('e4'), new Square('d5'));
       
       const moveHistory = game.getMoveHistory();
-      const capturedMoves = moveHistory.filter(m => m.isCapture);
+      const capturedMoves = moveHistory.filter(m => m.isCapture());
       expect(capturedMoves.length).toBe(1);
       expect(capturedMoves[0].capturedPiece?.name).toBe('Pawn');
       expect(capturedMoves[0].capturedPiece?.color).toBe('black');
@@ -158,7 +158,7 @@ describe('Chess Game', () => {
       game.makeMove(new Square('g1'), new Square('f3'));
 
       const moveHistory = game.getMoveHistory();
-      const capturedMoves = moveHistory.filter(m => m.isCapture);
+      const capturedMoves = moveHistory.filter(m => m.isCapture());
       expect(capturedMoves.length).toBe(0);
     });
   });
@@ -204,7 +204,7 @@ describe('Chess Game', () => {
       const moveHistory = game.getMoveHistory();
       const captureMove = moveHistory[2];
       
-      expect(captureMove.isCapture).toBe(true);
+      expect(captureMove.isCapture()).toBe(true);
       expect(captureMove.piece.name).toBe('Pawn');
       expect(captureMove.piece.color).toBe('white');
     });

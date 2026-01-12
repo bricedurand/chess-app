@@ -96,7 +96,7 @@ export class Board {
 
   executeMove(move: Move): void {
     // remove captured piece if any
-    if(move.isCapture) {
+    if(move.isCapture()) {
       this.pieces.delete(move.to.notation);
       this.capturedPieces.push(move.capturedPiece!);
     }
@@ -114,7 +114,7 @@ export class Board {
     move.piece.square = move.from;
 
     // restore captured piece if any
-    if(move.isCapture) {
+    if(move.isCapture()) {
       this.pieces.set(move.to.notation, move.capturedPiece!);
       this.capturedPieces.pop();
     }
