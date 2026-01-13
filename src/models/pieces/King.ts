@@ -1,16 +1,15 @@
 import { Piece, MoveDirection } from '../Piece';
 export class King extends Piece {
   getDirections(): MoveDirection[] {
-    const maxSteps = 1;
     return [
-      { file: 1, rank: 0, maxSteps },
-      { file: 1, rank: 1, maxSteps },
-      { file: 0, rank: 1, maxSteps },
-      { file: -1, rank: 1, maxSteps },
-      { file: -1, rank: 0, maxSteps },
-      { file: -1, rank: -1, maxSteps },
-      { file: 0, rank: -1, maxSteps },
-      { file: 1, rank: -1, maxSteps },
+      { file: 1, rank: 0 },
+      { file: 1, rank: 1 },
+      { file: 0, rank: 1 },
+      { file: -1, rank: 1 },
+      { file: -1, rank: 0 },
+      { file: -1, rank: -1 },
+      { file: 0, rank: -1 },
+      { file: 1, rank: -1 },
     ];
   }
 

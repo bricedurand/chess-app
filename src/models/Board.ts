@@ -94,6 +94,10 @@ export class Board {
     return piece ? piece.color !== color : false;
   }
 
+  isEmpty(square: Square): boolean {
+    return !this.getPiece(square);
+  }
+
   executeMove(move: Move): void {
     // remove captured piece if any
     if(move.isCapture()) {

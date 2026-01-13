@@ -10,17 +10,16 @@ export class Pawn extends Piece {
     // Pawns cannot capture moving forward, so we need to check if there is an opponent piece ahead
     const squareAhead = this.square.offset(0, rankDirection);
     if (squareAhead && !this.board.isOccupiedByOpponent(squareAhead, this.color)) {
-      let direction = { file: 0, rank: rankDirection, maxSteps: 1 }
+      directions.push({ file: 0, rank: rankDirection });
       
       // If at starting position, can move two squares forward if both are unoccupied
       if (this.isAtStartingPosition()) {
         const twoSquaresAhead = this.square.offset(0, rankDirection * 2);
         if (twoSquaresAhead &&
             !this.board.isOccupiedByOpponent(twoSquaresAhead, this.color)) {
-          direction.maxSteps = 2;
+          directions.push({ file: 0, rank: rankDirection * 2 });
         }
       }
-      directions.push(direction);
     }
 
     // Pawns can capture diagonally, but only if there is an opponent piece
@@ -28,9 +27,11 @@ export class Pawn extends Piece {
     for (const fileDirection of captureFileDirections) {
       const captureSquare = this.square.offset(fileDirection, rankDirection);
       if (captureSquare && this.board.isOccupiedByOpponent(captureSquare, this.color)) {
-        directions.push({ file: fileDirection, rank: rankDirection, maxSteps: 1 });
+        directions.push({ file: fileDirection, rank: rankDirection });
       }
     }
+
+    // TODO implement en passant capture
   
     return directions;
   }

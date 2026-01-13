@@ -5,7 +5,6 @@ import { Board } from './Board';
 export interface MoveDirection {
   file: number;
   rank: number;
-  maxSteps: number;
 }
 
 export abstract class Piece {
@@ -58,7 +57,7 @@ export abstract class Piece {
 
   abstract getDirections(): MoveDirection[];
 
-    /**
+  /**
    * Gets all squares the piece can move to, without considering if king is in check
    * A square is reachable if it is inside the board and not occupied or blocked by a piece with the same color
    * @returns Array of squares the piece can reach
@@ -68,29 +67,19 @@ export abstract class Piece {
     const directions = this.getDirections();
 
     for (const direction of directions) {
-      let currentSquare = this._square;
-      let steps = 1;
-
-      while (steps <= direction.maxSteps) {
-        const nextSquare = currentSquare.offset(direction.file, direction.rank);
-        if (!nextSquare) break; // Out of bounds
-
-        // Stop if occupied by own piece
-        if (this.board.isOccupiedBy(nextSquare, this._color)) {
-          break;
-        }
-
-        // Can capture opponent piece but stop afterwards
-        if (this.board.isOccupiedByOpponent(nextSquare, this._color)) {
-          reachableSquares.push(nextSquare);
-          break;
-        }
-
-        reachableSquares.push(nextSquare);
-        currentSquare = nextSquare;
-        steps++;
-      }
+      reachableSquares.push(...this.getReachableSquaresInDirection(this._square, direction));
     }
+
+    return reachableSquares;
+  }
+
+  protected getReachableSquaresInDirection(startSquare: Square, direction: MoveDirection): Square[] {
+    const nextSquare = startSquare.offset(direction.file, direction.rank);
+    if (!nextSquare) return []; // outside board
+    if (this.board.isOccupiedBy(nextSquare, this._color)) return []; // blocked by same color piece
+
+    const reachableSquares = [nextSquare];
+    if (this.board.isOccupiedByOpponent(nextSquare, this._color)) return reachableSquares; // capture and stop
 
     return reachableSquares;
   }
@@ -100,6 +89,19 @@ export abstract class Piece {
    */
   toString(): string {
     return `${this.color} ${this.name} at ${this.square.notation}`;
+  }
+}
+
+export abstract class SlidingPiece extends Piece {
+  protected override getReachableSquaresInDirection(startSquare: Square, direction: MoveDirection): Square[] {
+    const reachableSquares = super.getReachableSquaresInDirection(startSquare, direction);
+    
+    const nextSquare = reachableSquares[0];
+    if (nextSquare && this.board.isEmpty(nextSquare)) {
+      reachableSquares.push(...this.getReachableSquaresInDirection(nextSquare, direction));
+    }
+    
+    return reachableSquares;
   }
 }
 
