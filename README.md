@@ -59,6 +59,9 @@ chess-app/
 ├── package.json         # Dependencies and scripts
 ├── tsconfig.json        # TypeScript configuration
 ├── app.json             # Expo configuration
+├── docs/                # Documentation
+│   ├── class-diagram.mmd # Mermaid source for class diagram
+│   └── class-diagram.svg # Generated class diagram
 └── assets/              # Images and static assets
     ├── icon.png
     ├── splash-icon.png
@@ -67,15 +70,46 @@ chess-app/
 
 ## Class Diagram
 
-![Class Diagram](class-diagram.svg)
+![Class Diagram](docs/class-diagram.svg)
 
-The diagram source is maintained in [class-diagram.mmd](class-diagram.mmd).
+This diagram shows the class architecture of the chess application, illustrating the relationships between the core components.
 
-To regenerate the SVG, PDF, or PNG from the Mermaid source, run:
+### Architecture Overview
+
+- **Game**: Manages the overall game state and flow
+- **Board**: Represents the chess board and manages piece positions
+- **Piece Hierarchy**: Abstract base classes and concrete piece implementations
+- **Move**: Represents individual chess moves
+- **Square**: Represents board positions
+- **PieceFactory**: Creates piece instances
+
+### Key Design Patterns
+
+- **Abstract Factory**: `PieceFactory` for creating different piece types
+- **Strategy Pattern**: Different piece types implement movement strategies
+- **Composite Pattern**: `SlidingPiece` extends `Piece` for sliding behavior
+
+### Inheritance Hierarchy
+
+```
+Piece (abstract)
+├── SlidingPiece (abstract)
+│   ├── Rook
+│   ├── Bishop
+│   └── Queen
+├── Pawn
+├── Knight
+└── King
+```
+
+### Regenerating the Diagram
+
+To regenerate the diagram from source:
+
 ```bash
-mmdc -i class-diagram.mmd -o class-diagram.svg
-mmdc -i class-diagram.mmd -o class-diagram.pdf
-mmdc -i class-diagram.mmd -o class-diagram.png
+npm install -g @mermaid-js/mermaid-cli
+
+mmdc -i docs/class-diagram.mmd -o docs/class-diagram.svg
 ```
 
 ## License

@@ -34,6 +34,12 @@ classDiagram
         +square: Square
         +getDirections()*: MoveDirection[]
         +getReachableSquares(): Square[]
+        +getReachableSquaresInDirection(startSquare: Square, direction: MoveDirection): Square[]
+    }
+
+    class SlidingPiece {
+        <<abstract>>
+        +getReachableSquaresInDirection(startSquare: Square, direction: MoveDirection): Square[]
     }
 
     class Move {
@@ -71,7 +77,6 @@ classDiagram
         <<interface>>
         +file: number
         +rank: number
-        +maxSteps: number
     }
 
     %% Concrete piece classes
@@ -95,9 +100,10 @@ classDiagram
     Move --> Board : has-a
 
     %% Inheritance
+    SlidingPiece --|> Piece
     Pawn --|> Piece
-    Rook --|> Piece
+    Rook --|> SlidingPiece
     Knight --|> Piece
-    Bishop --|> Piece
-    Queen --|> Piece
+    Bishop --|> SlidingPiece
+    Queen --|> SlidingPiece
     King --|> Piece
