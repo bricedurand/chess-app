@@ -28,7 +28,9 @@
     "web": "expo start --web",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "cli": "cd apps/cli && npm run dev",
+    "cli:build": "cd apps/cli && npm run build"
   },
   "dependencies": {
     "expo": "~54.0.18",

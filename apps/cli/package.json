@@ -1,0 +1,26 @@
+{
+  "name": "@chess-app/cli",
+  "version": "1.0.0",
+  "description": "CLI chess game application",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc && node dist/index.js"
+  },
+  "keywords": [
+    "chess",
+    "cli",
+    "game"
+  ],
+  "author": "bricedurand",
+  "license": "MIT",
+  "dependencies": {
+    "@chess-app/core": "*"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.2",
+    "@types/node": "^22.0.0"
+  }
+}
