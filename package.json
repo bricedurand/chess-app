@@ -2,6 +2,11 @@
   "name": "chess-app",
   "version": "1.0.0",
   "description": "A React Native chess application built with Expo",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "main": "index.ts",
   "repository": {
     "type": "git",

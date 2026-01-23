@@ -1,23 +1,28 @@
 # Chess App
 
-A React Native chess application built with Expo, designed to provide an intuitive and engaging chess experience on mobile devices.
+A monorepo chess application with shared core logic and multiple UI implementations (CLI, web, mobile, etc.).
 
-## Features
+## Architecture
 
-- 🎯 Modern React Native interface
-- 📱 Cross-platform support (iOS, Android, Web)
-- 🎨 Clean and intuitive UI/UX
-- ⚡ Built with Expo for fast development
+This project uses a monorepo structure with shared chess logic and multiple UI clients:
 
-## Prerequisites
+- **`packages/core`**: Pure TypeScript chess engine (no dependencies)
+- **`apps/`**: Different UI implementations that consume the core package
+  - CLI (terminal/ASCII interface)
+  - Future: FlutterFlow, React Native mobile app
 
-Before you begin, ensure you have the following installed:
+## Project Philosophy
+
+Inspired by [TodoMVC](https://todomvc.com/), this project demonstrates how the same chess logic can power different UI technologies. All game rules, move validation, and state management live in the core package, while each app provides its own user experience.
+
+## Getting Started
+
+### Prerequisites
 
 - [Node.js](https://nodejs.org/) (version 16 or higher)
-- [Expo CLI](https://docs.expo.dev/get-started/installation/)
 - [Git](https://git-scm.com/)
 
-## Installation
+### Installation
 
 1. Clone the repository:
    ```bash
@@ -30,42 +35,32 @@ Before you begin, ensure you have the following installed:
    npm install
    ```
 
-3. Start the development server:
+3. Build the core package:
    ```bash
-   npm start
+   cd packages/core
+   npm run build
+   npm test
    ```
-
-## Usage
-
-### Running on Different Platforms
-
-- **Web**: `npm run web`
-- **iOS**: `npm run ios` (requires Xcode on macOS)
-- **Android**: `npm run android` (requires Android Studio)
-
-### Development
-
-The app uses Expo for development, which provides:
-- Hot reloading for instant feedback
-- Easy device testing with Expo Go app
-- Built-in debugging tools
 
 ## Project Structure
 
 ```
 chess-app/
-├── App.tsx              # Main application component
-├── index.ts             # Entry point
-├── package.json         # Dependencies and scripts
-├── tsconfig.json        # TypeScript configuration
-├── app.json             # Expo configuration
-├── docs/                # Documentation
-│   ├── class-diagram.mmd # Mermaid source for class diagram
-│   └── class-diagram.svg # Generated class diagram
-└── assets/              # Images and static assets
-    ├── icon.png
-    ├── splash-icon.png
-    └── ...
+├── packages/
+│   └── core/               # Shared chess logic
+│       ├── src/
+│       │   ├── models/     # Game, Board, Piece, Move
+│       │   ├── types/      # TypeScript types
+│       │   └── utils/      # Square utilities
+│       ├── package.json
+│       └── README.md
+├── apps/                   # UI implementations
+│   ├── cli/               # Terminal interface (coming soon)
+│   ├── flutter-flow/      # Flutter flow app
+|   ├── ...                # Other platforms
+├── docs/                  # Documentation
+│   └── class-diagram.mmd
+└── package.json           # Workspace root
 ```
 
 ## Class Diagram
