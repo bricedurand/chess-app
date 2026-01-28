@@ -13,10 +13,6 @@ export class King extends Piece {
     ];
   }
 
-  getMaxSteps(): number {
-    return 1;
-  }
-
   get symbol(): string {
     return this.isWhite() ? '♔' : '♚';
   }
