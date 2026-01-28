@@ -1,5 +1,5 @@
 import * as readline from 'readline';
-import { Game, Square } from '@chess-app/core';
+import { Game } from '@chess-app/core';
 
 class ChessCLI {
   private game: Game;
@@ -15,7 +15,7 @@ class ChessCLI {
 
   start(): void {
     console.log('Welcome to Chess CLI!\n');
-    console.log('Enter moves in the format: e2 e4');
+    console.log('Enter moves in coordinate notation: e2 e4');
     console.log('Type "quit" to exit, "reset" to start a new game, "undo" to undo last move\n');
     
     this.displayBoard();
@@ -78,7 +78,7 @@ class ChessCLI {
       return;
     }
 
-    // Parse move in format "e2 e4"
+    // Parse move in coordinate notation (e.g., "e2 e4")
     const moveParts = input.split(' ').filter(part => part.length > 0);
     
     if (moveParts.length !== 2) {
@@ -88,10 +88,7 @@ class ChessCLI {
     }
 
     try {
-      const from = new Square(moveParts[0]);
-      const to = new Square(moveParts[1]);
-      
-      this.game.makeMove(from, to);
+      this.game.makeMove(moveParts[0], moveParts[1]);
       this.displayBoard();
       
     } catch (error) {

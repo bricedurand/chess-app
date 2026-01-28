@@ -62,23 +62,26 @@ export class Game {
   /**
    * Attempts to make a move
    */
-  makeMove(from: Square, to: Square): void {
+  makeMove(from: string, to: string): void {
     if (this.isGameOver) {
       throw new Error('Game is over');
     }
 
-    const piece = this.board.getPiece(from);
+    const fromSquare = new Square(from);
+    const toSquare = new Square(to);
+
+    const piece = this.board.getPiece(fromSquare);
     if (!piece) {
-      throw new Error(`No piece at ${from.notation}`);
+      throw new Error(`No piece at ${from}`);
     }
     if (piece.color !== this.currentPlayer) {
       throw new Error(`It's ${this.currentPlayer}'s turn`);
     }
 
-    const move = new Move(from, to, this.board);
+    const move = new Move(fromSquare, toSquare, this.board);
     const isLegalMove = this.board.getLegalMoves(piece).some((legalMove) => legalMove.equals(move));
     if (!isLegalMove) {
-      throw new Error(`Invalid move: ${piece.name} cannot move from ${from.notation} to ${to.notation}`);
+      throw new Error(`Invalid move: ${piece.name} cannot move from ${from} to ${to}`);
     }
 
     this.board.executeMove(move);
