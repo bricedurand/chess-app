@@ -2,6 +2,7 @@ import { SquareDistance, Color } from '../types/chess';
 import { Piece } from './Piece';
 import { King } from './pieces/King';
 import { Pawn } from './pieces/Pawn';
+import { Rook } from './pieces/Rook';
 import { Square } from '../utils/Square';
 import { Board } from './Board';
 
@@ -16,6 +17,8 @@ export class Move {
   public readonly timestamp: Date;
   public readonly capturedPiece?: Piece;
   public readonly board: Board;
+  public readonly pieceHadMoved: boolean;
+  public readonly rookHadMoved?: boolean;
 
   constructor(
     from: Square,
@@ -33,10 +36,21 @@ export class Move {
     this.to = to;
     this.board = board;
     this.piece = board.getPiece(from)!;
+    this.pieceHadMoved = this.piece.hasMoved;
     this.moveNumber = moveNumber;
     this.isCheck = options.isCheck ?? false;
     this.isCheckmate = options.isCheckmate ?? false;
     this.capturedPiece = board.getPiece(to);
+    
+    // Store rook's hasMoved state for castling undo
+    if (this.piece instanceof King && this.isCastling()) {
+      const isKingside = to.file === 7;
+      const rookFile = isKingside ? 8 : 1;
+      const rookSquare = new Square({ file: rookFile, rank: from.rank });
+      const rook = board.getPiece(rookSquare);
+      this.rookHadMoved = rook?.hasMoved;
+    }
+    
     this.notation = options.notation || this.generateNotation();
     this.timestamp = new Date();
   }
@@ -75,7 +89,7 @@ export class Move {
   /**
    * Checks if this move is a castling move
    */
-  private isCastling(): boolean {
+  isCastling(): boolean {
     if (!(this.piece instanceof King)) return false;
     
     const distance = this.getDistance();

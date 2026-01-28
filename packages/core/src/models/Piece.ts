@@ -11,11 +11,20 @@ export abstract class Piece {
   public readonly _color: Color;
   private _square: Square;
   protected board: Board;
+  private _hasMoved: boolean = false;
 
   constructor(color: Color, square: Square, board: Board) {
     this._color = color;
     this.board = board;
     this._square = square;
+  }
+
+  get hasMoved(): boolean {
+    return this._hasMoved;
+  }
+
+  set hasMoved(value: boolean) {
+    this._hasMoved = value;
   }
 
   /**

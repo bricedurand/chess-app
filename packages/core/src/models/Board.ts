@@ -105,17 +105,59 @@ export class Board {
       this.capturedPieces.push(move.capturedPiece!);
     }
 
+    // Handle castling - move the rook
+    if (move.isCastling()) {
+      const isKingside = move.to.file === 7; // g-file
+      const rookFromFile = isKingside ? 8 : 1; // h or a
+      const rookToFile = isKingside ? 6 : 4; // f or d
+      const rank = move.from.rank;
+      
+      const rookFrom = new Square({ file: rookFromFile, rank });
+      const rookTo = new Square({ file: rookToFile, rank });
+      const rook = this.getPiece(rookFrom);
+      
+      if (rook) {
+        this.pieces.delete(rookFrom.notation);
+        this.pieces.set(rookTo.notation, rook);
+        rook.square = rookTo;
+        rook.hasMoved = true;
+      }
+    }
+
     // move piece to new square
     this.pieces.delete(move.piece.square.notation);
     this.pieces.set(move.to.notation, move.piece);
     move.piece.square = move.to;
+    move.piece.hasMoved = true;
   }
 
   undoMove(move: Move): void {
+    // Restore hasMoved state
+    move.piece.hasMoved = move.pieceHadMoved;
+
     // move piece to old square
     this.pieces.delete(move.to.notation);
     this.pieces.set(move.from.notation, move.piece);
     move.piece.square = move.from;
+
+    // Undo castling - move rook back
+    if (move.isCastling()) {
+      const isKingside = move.to.file === 7; // g-file
+      const rookFromFile = isKingside ? 8 : 1; // h or a
+      const rookToFile = isKingside ? 6 : 4; // f or d
+      const rank = move.from.rank;
+      
+      const rookFrom = new Square({ file: rookFromFile, rank });
+      const rookTo = new Square({ file: rookToFile, rank });
+      const rook = this.getPiece(rookTo);
+      
+      if (rook) {
+        this.pieces.delete(rookTo.notation);
+        this.pieces.set(rookFrom.notation, rook);
+        rook.square = rookFrom;
+        rook.hasMoved = move.rookHadMoved!;
+      }
+    }
 
     // restore captured piece if any
     if(move.isCapture()) {
