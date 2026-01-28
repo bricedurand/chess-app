@@ -172,6 +172,25 @@ export class Board {
     for (const reachableSquare of piece.getReachableSquares()) {
       const candidateMove = new Move(piece.square, reachableSquare, this);
 
+      // For castling moves, check additional constraints
+      if (candidateMove.isCastling()) {
+        // King cannot castle while in check
+        if (this.isKingInCheck(piece.color)) {
+          continue;
+        }
+
+        // King cannot castle through check
+        const isKingside = reachableSquare.file === 7; // g-file
+        const intermediateFile = isKingside ? 6 : 4; // f-file or d-file
+        const intermediateSquare = new Square({ file: intermediateFile, rank: piece.square.rank });
+        const intermediateMove = new Move(piece.square, intermediateSquare, this);
+        
+        if (this.wouldPutKingInCheck(intermediateMove)) {
+          continue;
+        }
+      }
+
+      // Check if the move would put/leave the king in check
       if (!this.wouldPutKingInCheck(candidateMove)) {
         legalMoves.push(candidateMove);
       }

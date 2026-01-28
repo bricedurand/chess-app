@@ -21,8 +21,8 @@ export class King extends Piece {
     const reachableSquares = super.getReachableSquares();
 
     // Add castling moves if eligible
-    // Note: We don't check isKingInCheck here to avoid infinite recursion
-    // The check for being in check should be done when getting legal moves
+    // Only check basic castling preconditions (king/rook unmoved, empty squares)
+    // Legality checks (not in/through/into check) are handled by board.getLegalMoves()
     if (!this.hasMoved) {
       // Kingside castling
       if (this.canCastle(true)) {
@@ -60,20 +60,6 @@ export class King extends Piece {
     for (const file of squaresToCheck) {
       const square = new Square({ file, rank });
       if (!this.board.isEmpty(square)) {
-        return false;
-      }
-    }
-
-    // King cannot castle while in check, through check, or into check
-    // For kingside: check e (starting), f, and g; for queenside: check e (starting), d, and c
-    const squaresToCheckForCheck = isKingside
-      ? [5, 6, 7]  // e, f, g
-      : [5, 4, 3];  // e, d, c
-
-    for (const file of squaresToCheckForCheck) {
-      const square = new Square({ file, rank });
-      const move = new Move(this.square, square, this.board);
-      if (this.board.wouldPutKingInCheck(move)) {
         return false;
       }
     }
